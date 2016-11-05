@@ -1,7 +1,5 @@
 # Fractal-Explorer
 Mandelbrot and Julia set explorer
-
- ![alt tag](Screenshots/fractals.gif)
  
  ![alt tag](Screenshots/Mandelbrot_1.png)
  
