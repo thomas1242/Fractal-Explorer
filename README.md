@@ -1,7 +1,7 @@
 # Fractal-Explorer
-Mandelbrot set and Julia set explorer
+Animated Mandelbrot and Julia set explorer
 
- //![alt tag](Screenshots/mandelbrot.gif)
- 
- //![alt tag](Screenshots/julia.gif)
- 
+Hold the left mouse button (LMB) to zoom in, hold the RMB to zoom out.
+Use the mouse cursor to control where you zoom.
+
+
