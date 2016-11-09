@@ -5,6 +5,3 @@ Hold the left mouse button (LMB) to zoom in, hold the RMB to zoom out.
 
 Use the mouse cursor to control where you zoom.
 
-optional: configure the frame rate, colors
-
-
