@@ -631,6 +631,10 @@ class ImageFrame extends JFrame
                     {
                         RMBisPressed( event.getPoint() );
                     }
+                    else if(event.getButton() == MouseEvent.BUTTON3)
+                    {
+                        RMBisPressed( event.getPoint() );
+                    }
                 }
             } );
             addMouseMotionListener( new MouseMotionAdapter()
