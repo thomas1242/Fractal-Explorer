@@ -13,7 +13,7 @@ Move the mouse cursor to control where you zoom.
 
 # Mandelbrot and Julia set explorer v1
 
-Mandelbrot set and Julia set explorer. Select a region and zoom.
+Select a region and zoom.
 
  ![alt tag](images/mandelbrot.gif)
  
