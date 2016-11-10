@@ -1,4 +1,4 @@
-# Mandelbrot and Julia set explorer
+# Mandelbrot and Julia set explorer v2
 
 Hold the left mouse button (LMB) to zoom in, hold the RMB to zoom out.
 
@@ -9,3 +9,13 @@ Move the mouse cursor to control where you zoom.
  
  
  ![alt tag](images/zoomoutjulia.gif)
+
+
+# Mandelbrot and Julia set explorer v1
+
+Mandelbrot set and Julia set explorer. Select a region and zoom.
+
+ ![alt tag](Screenshots/mandelbrot.gif)
+ 
+ ![alt tag](Screenshots/julia.gif)
+ 
