@@ -6,7 +6,7 @@ import javax.imageio.*;
 import javax.swing.*;
 import java.awt.geom.*;
 
-public class FractalExplorer_1
+public class FractalExplorer_v1
 {
     private static final int WIDTH = 600;
     private static final int HEIGHT = 450;
