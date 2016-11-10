@@ -7,7 +7,7 @@ import javax.swing.*;
 import java.awt.geom.*;
 import javax.swing.SwingUtilities;
 
-public class FractalExplorer
+public class FractalExplorer_2
 {
     private static final int WIDTH = 600;
     private static final int HEIGHT = 450;
