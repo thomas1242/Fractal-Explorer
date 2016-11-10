@@ -561,7 +561,6 @@ class ImageFrame extends JFrame
     private void zoomIn() {
         if( image == null || (MandelbrotImage == false && JuliaImage == false) )
             return;
-        
         x0 = .0125;
         y0 = .0125;
         x1 = .9875;
@@ -578,11 +577,11 @@ class ImageFrame extends JFrame
     private void zoomOut() {
         if( image == null || (MandelbrotImage == false && JuliaImage == false) )
             return;
-        
         x0 = -.025;
         y0 = -.025;
         x1 = 1.025;
         y1 = 1.025;
+        
         if(MandelbrotImage){
             Mandelbrot("");
         }
