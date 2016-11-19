@@ -145,8 +145,8 @@ class ImageFrame extends JFrame
         }
         try                                   // enclose code that might throw an exception with a try block
         {
-            a = Double.parseDouble( a1 );     // try to parse a double from user's input string
-            b = Double.parseDouble( b1 );     // try to parse a double from user's input string
+            a = Double.parseDouble( a1 );     // try to parse a number from user's input string
+            b = Double.parseDouble( b1 );     // try to parse a number from user's input string
         }
         catch( NumberFormatException e )      // catch and handle potential exception of type NumberFormatException
         {
@@ -198,14 +198,14 @@ class ImageFrame extends JFrame
         // initial u
         double z_r =  (double)(startX/(image.getWidth()-1)) * 4 - 2;        // sample the complex plane
         double z_i =  1.5 - (double)(startY/(image.getHeight()-1)) * 3;
-        double teet = startY;
+        double sY = startY;
         
         double delta_X = (endX - startX) / (600 - 1);         // change in x per sample
         double delta_Y = (endY - startY) / (450 - 1);         // change in y per sample
         
         
         for(double i = 0; i < image.getWidth(); i++) {
-            startY = teet;
+            startY = sY;
             for(double j = 0; j < image.getHeight(); j++) {                 // for each pixel in the image
                 
                 z_r =  (double)(startX/(image.getWidth()-1)) * 4 - 2;       // sample the complex plane
@@ -285,14 +285,14 @@ class ImageFrame extends JFrame
         double u_r =  (double)(startX/(image.getWidth()-1)) * 4 - 2;
         double u_i =  1.5 - (double)(startY/(image.getHeight()-1)) * 3;
 
-        double teet = startY;
+        double sY = startY;
         
         double delta_X = (endX - startX) / (600 - 1);         // change in x per sample
         double delta_Y = (endY - startY) / (450 - 1);         // change in y per sample
         
         
         for(double i = 0; i < image.getWidth(); i++) {
-            startY = teet;
+            startY = sY;
             for(double j = 0; j < image.getHeight(); j++) {    // for each pixel in the image
                 
                 u_r =        (double)( startX / ( image.getWidth()  - 1 )) * 4 - 2; // sample the complex plane
