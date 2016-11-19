@@ -47,15 +47,14 @@ class ImageFrame extends JFrame
         this.setTitle( "Fractal Explorer" );
         this.setSize( width, height );
         setupImage();                                            // setup bufferedImage
-        addMenu();                                               // setup and add a menu bar for this frame
+        addMenu();                                               // add menu bar
     }
     
-    private void addMenu() {       // setup menu bar
+    private void addMenu() {
         
-                                                            // setup the File menu
-        JMenu fileMenu = new JMenu( "File" );               // create a new menu that will appear as "File" when added to menu bar
-        JMenuItem exitItem = new JMenuItem( "Exit" );       // create a new menu item that will appear as "Exit" within a menu
-        exitItem.addActionListener( new ActionListener()    // define what happens when this menu item is selected
+        JMenu fileMenu = new JMenu( "File" );               // create "File" menu
+        JMenuItem exitItem = new JMenuItem( "Exit" );       // create "Exit" menu item
+        exitItem.addActionListener( new ActionListener()    // define what happens when this item is selected
                                    {
             public void actionPerformed( ActionEvent event )
             {
@@ -227,7 +226,7 @@ class ImageFrame extends JFrame
                 if(t < 100) {           // z diverged, not in the set
                     image.setRGB( (int)i, (int)j,  colorArray[t]);
                 }
-                else if (t % 2 == 0){   // if even, mark for sweet visual effects
+                else if (t % 2 == 0){   // if even, mark for visual effects
                     image.setRGB( (int)i, (int)j, 0xFF000000 );
                 }
                 else {                  // z might be in the set
@@ -439,16 +438,11 @@ class ImageFrame extends JFrame
             {
                 button.setText( "Zoom" );
                 // get the relative corner coordinates
-                double Xi = panel.getUpperLeft().getX();
-                double Yi = panel.getUpperLeft().getY();
-                double Xf = panel.getLowerRight().getX();
-                double Yf = panel.getLowerRight().getY();
-                
-                x0 = Xi;        // store relative corners
-                y0 = Yi;
-                x1 = Xf;
-                y1 = Yf;
-                
+                x0 = panel.getUpperLeft().getX();
+                y0 = panel.getUpperLeft().getY();
+                x1 = panel.getLowerRight().getX();
+                y1 = panel.getLowerRight().getY();
+
                 if(MandelbrotImage){
                     Mandelbrot();
                 }
