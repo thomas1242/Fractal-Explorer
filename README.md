@@ -1,4 +1,4 @@
-# Mandelbrot and Julia set explorer made for Dave Small's Into to DAS class.
+# Mandelbrot and Julia set explorer from Dave Small's Intro to DAS class.
 
 Hold the left mouse button (LMB) to zoom in, hold the RMB to zoom out.
 
