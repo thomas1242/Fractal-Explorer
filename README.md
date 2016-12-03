@@ -1,4 +1,4 @@
-# Mandelbrot and Julia set explorer v2
+# Mandelbrot and Julia set explorer made for Dave Small's Into to DAS class.
 
 Hold the left mouse button (LMB) to zoom in, hold the RMB to zoom out.
 
@@ -11,7 +11,7 @@ Move the mouse cursor to control where you zoom.
  ![alt tag](images/zoomoutjulia.gif)
 
 
-# Mandelbrot and Julia set explorer v1
+# Mandelbrot and Julia set explorer 
 
 Select a region and zoom.
 
