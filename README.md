@@ -1,4 +1,4 @@
-# Mandelbrot and Julia set explorer from Dave Small's Intro to Digital Arts & Sciences class.
+# Mandelbrot and Julia set explorer from Dave Small's Intro to Digital Arts & Sciences course.
 
 Hold the left mouse button (LMB) to zoom in, hold the RMB to zoom out.
 
