@@ -1,7 +1,5 @@
 # Mandelbrot and Julia set explorer made in Dave Small's Intro to Digital Arts & Sciences course.
 
-Hold the left mouse button (LMB) to zoom in, hold the RMB to zoom out.
-
 Move the mouse cursor to control where you zoom.
 
 
