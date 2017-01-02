@@ -1,5 +1,5 @@
 # Mandelbrot and Julia set explorer 
-## Coursework from Dave Small's Intro to Digital Arts & Sciences class.
+## Coursework from Dave Small's Intro to Digital Arts & Sciences.
 
 Move the mouse cursor to control where you zoom.
 
