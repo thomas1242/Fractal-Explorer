@@ -1,4 +1,4 @@
-# Mandelbrot and Julia set explorer 
+# Mandelbrot and Julia set explorer v2
 ## Coursework from Dave Small's Intro to Digital Arts & Sciences.
 
 Move the mouse cursor to control where you zoom.
@@ -10,7 +10,7 @@ Move the mouse cursor to control where you zoom.
  ![alt tag](images/zoomoutjulia.gif)
 
 
-# Mandelbrot and Julia set explorer 
+# Mandelbrot and Julia set explorer v1
 
 Select a region and zoom.
 
