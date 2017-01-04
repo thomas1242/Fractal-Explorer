@@ -10,7 +10,7 @@
 >> javac FractalExplorer_v2.java && java FractalExplorer_v2
 
 
-####Move the mouse cursor to control where you zoom.
+###Move the mouse cursor to control where you zoom.
 
 
  ![alt tag](images/demo_10.gif)
@@ -21,12 +21,12 @@
 
 >> javac FractalExplorer_v1.java && java FractalExplorer_v1
 
-####Select a region and zoom.
+###Select a region and zoom.
 
  ![alt tag](images/mandelbrot.gif)
  
  ![alt tag](images/julia.gif)
  
-####Configure colors and frame rate
+###Configure colors and frame rate
 
  ![alt tage](images/menu.png)
