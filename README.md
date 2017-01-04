@@ -29,4 +29,4 @@ Select a region and zoom.
  
 Configure colors and frame rate
 
- ![alt tage](image/menu.png)
+ ![alt tage](images/menu.png)
