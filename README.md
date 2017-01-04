@@ -27,3 +27,6 @@ Select a region and zoom.
  
  ![alt tag](images/julia.gif)
  
+Configure colors and frame rate
+
+ ![alt tage](image/menu.png)
