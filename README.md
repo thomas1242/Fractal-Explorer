@@ -19,7 +19,7 @@
  ![alt tag](images/zoomoutjulia.gif)
 
 
-# Mandelbrot and Julia set explorer
+>> javac FractalExplorer_v1.java && java FractalExplorer_v1
 
 ####Select a region and zoom.
 
