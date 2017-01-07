@@ -18,7 +18,7 @@
  
  ![alt tag](images/julia.gif)
  
-###Configure colors and frame rate
+###Menu.
 
  ![alt tage](images/menu.png)
 
