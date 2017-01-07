@@ -18,7 +18,6 @@
  
  ![alt tag](images/julia.gif)
  
-###Menu.
 
  ![alt tage](images/menu.png)
 
