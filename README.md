@@ -14,7 +14,7 @@ java FractalExplorer_v2
 ```
 
 
-###Use the mouse cursor to control where you zoom.
+### Use the mouse cursor to control where you zoom.
 
 
  ![alt tag](images/demo_10.gif)
@@ -24,7 +24,7 @@ java FractalExplorer_v2
 
 
 
-###Select a region and zoom.
+### Select a region and zoom.
 
  ![alt tag](images/mandelbrot.gif)
  
