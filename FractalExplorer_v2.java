@@ -1,4 +1,3 @@
-
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.*;
@@ -17,9 +16,9 @@ public class FractalExplorer_v2 {
     }
     
     private static void createAndShowGUI() {
-        JFrame frame = new ImageFrame( WIDTH, HEIGHT);             // setup new frame
-        frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );    // exit when the user closes the frame
-        frame.setVisible( true );                         		   // make the frame visible
+        JFrame frame = new ImageFrame( WIDTH, HEIGHT);             
+        frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );    
+        frame.setVisible( true );                         		   
     }
 }
 
@@ -46,22 +45,17 @@ class ImageFrame extends JFrame {
     public ImageFrame(int width, int height) {
         this.setTitle( "Fractal Explorer" );
         this.setSize( width, height );
-        setupImage();                                            // setup bufferedImage
-        addMenu();                                               // setup and add a menu bar for this frame
+        setupImage();                                           
+        addMenu();   
+        Mandelbrot( "default" );                                           
     }
     
-    private void addMenu() {
-                                                            // setup the File menu
-        JMenu fileMenu = new JMenu( "File" );               // create a new menu that will appear as "File" when added to menu bar
-        JMenuItem exitItem = new JMenuItem( "Exit" );       // create a new menu item that will appear as "Exit" within a menu
-        exitItem.addActionListener( e -> {
-           System.exit( 0 );
-        });
+    private void addMenu() {                                    
+        JMenu fileMenu = new JMenu( "File" );           
         JMenuItem Mandelbrot = new JMenuItem( "Mandelbrot" );
         Mandelbrot.addActionListener(  e -> {
              new Thread( () -> Mandelbrot( "default" ) ).start();
         });
-
         fileMenu.add( Mandelbrot );
         JMenuItem Julia = new JMenuItem( "Julia" );
         Julia.addActionListener( e -> {
@@ -82,7 +76,6 @@ class ImageFrame extends JFrame {
         });
         
         fileMenu.add( save_image );
-        fileMenu.add( exitItem );
         fileMenu.add( conf );
         fileMenu.add( fps );
 
@@ -91,24 +84,20 @@ class ImageFrame extends JFrame {
         this.setJMenuBar( menuBar );                        // attach the finalized menu bar to the frame
     }
     
-    public void displayBufferedImage( BufferedImage image )
-    {
+    public void displayBufferedImage( BufferedImage image ) {
         this.setContentPane( new JScrollPane( new JLabel( new ImageIcon( image ))));  // display the image
         this.validate();  // causes the container to lay out its subcomponents that may have been modified
     }
     
     private void configureFPS(boolean isNew) {
-        
         if( !isNew ) {
-            String s = JOptionPane.showInputDialog("Frames per second (default: 15 fps):");   // Prompt the user
+            String s = JOptionPane.showInputDialog("Frames per second (default: 30 fps):");   // Prompt the user
             if(s == null)
                 return;
-            try                                           // enclose code that might throw an exception with a try block
-            {
+            try{                                           // enclose code that might throw an exception with a try block
                 framesPerSec = Integer.parseInt( s );     // parse int from user's input string
             }
-            catch( NumberFormatException e )              // catch and handle potential exception
-            {
+            catch( NumberFormatException e ) {             // catch and handle potential exception
                 JOptionPane.showMessageDialog( this, e );
                 return;
             }
@@ -130,23 +119,8 @@ class ImageFrame extends JFrame {
     }
     
     private double[] getMu() {
-        
-        double a, b;
-        String a1 = JOptionPane.showInputDialog("u = a + bi, enter a:\ntry u = -0.8 + 0.156i or u = 0.285 +0.01i");
-        String b1 = JOptionPane.showInputDialog("u = a + bi, enter b:\ntry u = -0.8 + 0.156i or u = 0.285 +0.01i");
-        
-        if(a1 == null || b1 == null)
-            return null;
-        try{
-            a = Double.parseDouble( a1 );
-            b = Double.parseDouble( b1 );
-        }
-        catch( NumberFormatException e ){
-            JOptionPane.showMessageDialog( this, e );
-            return null;
-        }
-        double[] u = {a, b};                  // u = a + bi
-        return u;                             // return u to Julia
+        //try u = -0.8 + 0.156i or u = 0.285 +0.01i
+        return new double[]{-0.8, 0.156};
     }
     
     private void saveImage(){
@@ -166,7 +140,6 @@ class ImageFrame extends JFrame {
     }
     
     private void Julia(String s) {
-        
         if(s == "default") 
             freshImage();
         
@@ -194,7 +167,6 @@ class ImageFrame extends JFrame {
         
         double delta_X = (endX - startX) / (WIDTH - 1);         // change in x per sample
         double delta_Y = (endY - startY) / (HEIGHT - 1);         // change in y per sample
-        
         
         for(double i = 0; i < image.getWidth(); i++) {
             startY = sY;
@@ -229,7 +201,6 @@ class ImageFrame extends JFrame {
     }
     
     private void Mandelbrot(String s) {
-        
         if(s == "default") {
             freshImage();
         }
@@ -295,7 +266,6 @@ class ImageFrame extends JFrame {
     }
     
     private void populateColorArray() {
-        
         colorArray =  new int[ 100 ];       // array of 100 color values, TYPE_INT_ARGB
         int start, end;
         
@@ -385,8 +355,7 @@ class ImageFrame extends JFrame {
         }
     }
     
-    private double[] getDeltas(int start, int end, int n)
-    {
+    private double[] getDeltas(int start, int end, int n){
         double start_R, start_G, start_B,		// vars to hold the color channels
         end_R,   end_G,   end_B,
         delta_R, delta_G, delta_B;
@@ -410,12 +379,10 @@ class ImageFrame extends JFrame {
     private int stringToInt(String s) { // convert string to integer, accepts hexadecimal numbers too
         int n;
         try {                            // try to parse integer value from the string
-            if( s.charAt(0) == '0' && (s.charAt(1) == 'x' || s.charAt(1) == 'X') ) {
+            if( s.charAt(0) == '0' && (s.charAt(1) == 'x' || s.charAt(1) == 'X') ) 
                 n = (int) Long.parseLong( s.substring( 2, s.length() ), 16 );
-            }
-            else {
+            else 
                 n = Integer.parseInt( s );
-            }
         }
         catch( NumberFormatException e ) {
             JOptionPane.showMessageDialog( this, e );
@@ -426,7 +393,6 @@ class ImageFrame extends JFrame {
     }
     
     private void configureColors() {
-        
         colors = new int[6];
         colorsConfigured = true;        // set flag so we know colors are configured
         
@@ -437,11 +403,9 @@ class ImageFrame extends JFrame {
         String s5 = JOptionPane.showInputDialog("inner start color?");
         String s6 = JOptionPane.showInputDialog("inner end color?");
         
-        if( s1 == null || s2 == null || s3 == null || s4 == null || s5 == null || s6 == null){
+        if( s1 == null || s2 == null || s3 == null || s4 == null || s5 == null || s6 == null)
             return;
-        }
-        try                                             // try to parse integer values from input strings
-        {
+        try  {
             colors[0] = stringToInt( s1 );
             colors[1] = stringToInt( s2 );
             colors[2] = stringToInt( s3 );
@@ -449,8 +413,7 @@ class ImageFrame extends JFrame {
             colors[4] = stringToInt( s5 );
             colors[5] = stringToInt( s6 );
         }
-        catch( NumberFormatException e )
-        {
+        catch( NumberFormatException e ) {
             JOptionPane.showMessageDialog( this, e );
             return;
         }
@@ -477,7 +440,7 @@ class ImageFrame extends JFrame {
         this.getContentPane().add( label, BorderLayout.SOUTH );
         this.pack();
         
-        framesPerSec = 15;
+        framesPerSec = 30;
         freshImage();
     }
     
@@ -524,9 +487,7 @@ class ImageFrame extends JFrame {
             Julia("");
     }
 
-    class FractalDisplayPanel extends JPanel
-    {
-        private Color OUTLINE_COLOR = Color.BLACK;
+    class FractalDisplayPanel extends JPanel {
         // panel size
         private final int WIDTH, MAX_X;
         private final int HEIGHT, MAX_Y;
@@ -539,12 +500,10 @@ class ImageFrame extends JFrame {
         private int w = 0;
         private int h = 0;
         
-        public FractalDisplayPanel( BufferedImage image )
-        {
+        public FractalDisplayPanel( BufferedImage image ){
             this.image = image;
             g2d = image.createGraphics();
-            g2d.setXORMode( OUTLINE_COLOR );
-            // define panel characteristics
+        
             WIDTH = image.getWidth();
             HEIGHT = image.getHeight();
             Dimension size = new Dimension( WIDTH, HEIGHT );
@@ -570,85 +529,33 @@ class ImageFrame extends JFrame {
             });
             addMouseListener( new MouseAdapter() {
                 public void mouseReleased(MouseEvent event) {
-                    mouseIsReleased( event.getPoint() );
+                    timer.stop();                       // stop zooming
                 }
             });
         }
-        //------------------------------------------------------------------------
-        // accessors - get points defining the area selected
-        Point2D.Double getUpperLeft()
-        {
-            return getUpperLeft( new Point2D.Double() );
-        }
-        Point2D.Double getUpperLeft( Point2D.Double p )
-        {
-            if ( w < 0 )
-                if ( h < 0 )
-                    p.setLocation( (x+w)/((double) MAX_X), (y+h)/((double) MAX_Y) );
-                else
-                    p.setLocation( (x+w)/((double) MAX_X), y/((double) MAX_Y) );
-                else if ( h < 0 )
-                    p.setLocation( x/((double) MAX_X), (y+h)/((double) MAX_Y) );
-                else
-                    p.setLocation( x/((double) MAX_X), y/((double) MAX_Y) );
-            
-            return p;
-        }
-        
-        Point2D.Double getLowerRight()
-        {
-            return getLowerRight( new Point2D.Double() );
-        }
-        
-        Point2D.Double getLowerRight( Point2D.Double p )
-        {
-            if ( w < 0 )
-                if ( h < 0 )
-                    p.setLocation(  x/((double) MAX_X), y/((double) MAX_Y) );
-                else
-                    p.setLocation(  x/((double) MAX_X), (y+h)/((double) MAX_Y) );
-                else if ( h < 0 )
-                    p.setLocation( (x+w)/((double) MAX_X), y/((double) MAX_Y) );
-                else
-                    p.setLocation( (x+w)/((double) MAX_X), (y+h)/((double) MAX_Y) );
-            
-            return p;
-        }
-        
-        //------------------------------------------------------------------------
-        // behaviors
-        
-        public void paintComponent( Graphics g )
-        {
+
+        public void paintComponent( Graphics g ){
             super.paintComponent( g );
             g.drawImage( image, 0, 0, null );
         }
         
-        private void updateSelection( Point p )
-        {
+        private void updateSelection( Point p ){
             zoom_destination_x = p.getX();     // update zoom destination
             zoom_destination_y = p.getY();
         }
         
-        private void LMBisPressed( Point p )
-        {
+        private void LMBisPressed( Point p ){
             zoom_destination_x = p.getX();      // update zoom destination
             zoom_destination_y = p.getY();
             currentDirection = true;            // zooming in
             timer.start();                      // start zooming
         }
         
-        private void RMBisPressed( Point p )
-        {
+        private void RMBisPressed( Point p ){
             zoom_destination_x = p.getX();      // update zoom destination
             zoom_destination_y = p.getY();
             currentDirection = false;           // zooming out
             timer.start();                      // start zooming
-        }
-        
-        private void mouseIsReleased( Point p )
-        {
-            timer.stop();                       // stop zooming
         }
     }
 }
