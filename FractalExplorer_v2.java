@@ -1,3 +1,4 @@
+
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.*;
@@ -7,31 +8,25 @@ import javax.swing.*;
 import java.awt.geom.*;
 import javax.swing.SwingUtilities;
 
-public class FractalExplorer_v2
-{
-    private static final int WIDTH = 600;
-    private static final int HEIGHT = 450;
+public class FractalExplorer_v2 {
+    private static final int WIDTH  = (int)(Toolkit.getDefaultToolkit().getScreenSize().getWidth() * .75);
+    private static final int HEIGHT = (int)(Toolkit.getDefaultToolkit().getScreenSize().getHeight() * .75);
     
     public static void main( String[] args ) {
-        SwingUtilities.invokeLater( new Runnable() {
-            public void run() {
-                createAndShowGUI();
-            }
-        } );
+        SwingUtilities.invokeLater( () -> createAndShowGUI() );
     }
     
-    private static void createAndShowGUI()
-    {
+    private static void createAndShowGUI() {
         JFrame frame = new ImageFrame( WIDTH, HEIGHT);             // setup new frame
         frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );    // exit when the user closes the frame
         frame.setVisible( true );                         		   // make the frame visible
     }
 }
 
-class ImageFrame extends JFrame
-{
-    private static final int WIDTH = 600;
-    private static final int HEIGHT = 450;
+class ImageFrame extends JFrame {
+    private static final int WIDTH  = (int)(Toolkit.getDefaultToolkit().getScreenSize().getWidth() * .75);
+    private static final int HEIGHT = (int)(Toolkit.getDefaultToolkit().getScreenSize().getHeight() * .75);
+
     private BufferedImage image = null;
     private Graphics2D g2d = null;
     private FractalDisplayPanel panel = null;
@@ -48,8 +43,7 @@ class ImageFrame extends JFrame
     int[] colors = null;
     int framesPerSec;
 
-    public ImageFrame( int width, int height)
-    {
+    public ImageFrame(int width, int height) {
         this.setTitle( "Fractal Explorer" );
         this.setSize( width, height );
         setupImage();                                            // setup bufferedImage
@@ -60,67 +54,32 @@ class ImageFrame extends JFrame
                                                             // setup the File menu
         JMenu fileMenu = new JMenu( "File" );               // create a new menu that will appear as "File" when added to menu bar
         JMenuItem exitItem = new JMenuItem( "Exit" );       // create a new menu item that will appear as "Exit" within a menu
-        exitItem.addActionListener( new ActionListener()    // define what happens when this menu item is selected
-        {
-            public void actionPerformed( ActionEvent event )
-            {
-                System.exit( 0 );
-            }
-        } );
+        exitItem.addActionListener( e -> {
+           System.exit( 0 );
+        });
         JMenuItem Mandelbrot = new JMenuItem( "Mandelbrot" );
-        Mandelbrot.addActionListener( new ActionListener()
-        {
-            public void actionPerformed( ActionEvent event )
-            {
-                new Thread( new Runnable()
-                {
-                    public void run()
-                    {
-                         Mandelbrot( "default" );
-                    }
-                } ).start();
-            }
-        } );
+        Mandelbrot.addActionListener(  e -> {
+             new Thread( () -> Mandelbrot( "default" ) ).start();
+        });
+
         fileMenu.add( Mandelbrot );
         JMenuItem Julia = new JMenuItem( "Julia" );
-        Julia.addActionListener( new ActionListener()
-        {
-            public void actionPerformed( ActionEvent event )
-            {
-                new Thread( new Runnable()
-                {
-                    public void run()
-                    {
-                        Julia( "default" );
-                    }
-                } ).start();
-            }
-        } );
+        Julia.addActionListener( e -> {
+             new Thread( () -> Julia( "default" ) ).start();
+        });
         fileMenu.add( Julia );
         JMenuItem save_image = new JMenuItem( "Save image" );
-        save_image.addActionListener( new ActionListener()
-        {
-            public void actionPerformed( ActionEvent event )
-            {
+        save_image.addActionListener( e -> {
                 saveImage();
-            }
-        } );
+        });
         JMenuItem conf = new JMenuItem( "Configure colors" );
-        conf.addActionListener( new ActionListener()
-        {
-            public void actionPerformed( ActionEvent event )
-            {
+        conf.addActionListener( e -> {
                 configureColors();
-            }
-        } );
+        });
         JMenuItem fps = new JMenuItem( "Configure frame rate" );
-        fps.addActionListener( new ActionListener()
-        {
-            public void actionPerformed( ActionEvent event )
-            {
+        fps.addActionListener( e -> {
                 configureFPS(false);
-            }
-        } );
+        });
         
         fileMenu.add( save_image );
         fileMenu.add( exitItem );
@@ -155,23 +114,19 @@ class ImageFrame extends JFrame
             }
         }
         
-        timer = new Timer((1000 / framesPerSec), new ActionListener()   // create a new timer
-        {
-            public void actionPerformed( ActionEvent e)
-            {
-                timer.stop();
-                topLeftX += ( (zoom_destination_x / (image.getWidth()  - 1) ) - 0.5) * currWidth;
-                topLeftY += ( (zoom_destination_y / (image.getHeight() - 1) ) - 0.5) * currHeight;
-                
-                if( currentDirection )
-                    zoomIn();
-                else
-                    zoomOut();
-                
-                repaint();
-                timer.restart();
-            }
-        } );
+        timer = new Timer((1000 / framesPerSec),  e -> {
+        timer.stop();
+        topLeftX += ( (zoom_destination_x / (image.getWidth()  - 1) ) - 0.5) * currWidth;
+        topLeftY += ( (zoom_destination_y / (image.getHeight() - 1) ) - 0.5) * currHeight;
+        
+        if( currentDirection )
+            zoomIn();
+        else
+            zoomOut();
+        
+        repaint();
+        timer.restart();
+        });
     }
     
     private double[] getMu() {
@@ -180,16 +135,13 @@ class ImageFrame extends JFrame
         String a1 = JOptionPane.showInputDialog("u = a + bi, enter a:\ntry u = -0.8 + 0.156i or u = 0.285 +0.01i");
         String b1 = JOptionPane.showInputDialog("u = a + bi, enter b:\ntry u = -0.8 + 0.156i or u = 0.285 +0.01i");
         
-        if(a1 == null || b1 == null){
+        if(a1 == null || b1 == null)
             return null;
-        }
-        try
-        {
+        try{
             a = Double.parseDouble( a1 );
             b = Double.parseDouble( b1 );
         }
-        catch( NumberFormatException e )
-        {
+        catch( NumberFormatException e ){
             JOptionPane.showMessageDialog( this, e );
             return null;
         }
@@ -197,19 +149,15 @@ class ImageFrame extends JFrame
         return u;                             // return u to Julia
     }
     
-    private void saveImage()
-    {
+    private void saveImage(){
         String inputString = JOptionPane.showInputDialog("ouput file?");
-        if(inputString == null || inputString.length() == 0) {
+        if(inputString == null || inputString.length() == 0) 
             return;
-        }
-        try
-        {
+        try {
             File outputFile = new File( inputString );
             ImageIO.write( image, "png", outputFile );
         }
-        catch ( IOException e )
-        {
+        catch ( IOException e ){
             JOptionPane.showMessageDialog( ImageFrame.this,
                                           "Error saving file",
                                           "oops!",
@@ -219,9 +167,8 @@ class ImageFrame extends JFrame
     
     private void Julia(String s) {
         
-        if(s == "default") {
+        if(s == "default") 
             freshImage();
-        }
         
         JuliaImage = true;
         MandelbrotImage = false;
@@ -245,8 +192,8 @@ class ImageFrame extends JFrame
         double z_i =  1.5 - (double)(startY/(image.getHeight()-1)) * 3;
         double sY = startY;
         
-        double delta_X = (endX - startX) / (600 - 1);         // change in x per sample
-        double delta_Y = (endY - startY) / (450 - 1);         // change in y per sample
+        double delta_X = (endX - startX) / (WIDTH - 1);         // change in x per sample
+        double delta_Y = (endY - startY) / (HEIGHT - 1);         // change in y per sample
         
         
         for(double i = 0; i < image.getWidth(); i++) {
@@ -258,26 +205,22 @@ class ImageFrame extends JFrame
                 t = 0;
                 
                 while(t != 100) {  // while t != tMax
-                    
                     double temp = z_r;                  // z = z^2 + u
                     z_r = ( z_r * z_r - z_i * z_i ) + U[0];
-                    z_i = ( temp * z_i + temp * z_i           ) + U[1];
+                    z_i = ( temp * z_i + temp * z_i ) + U[1];
                     
-                    if( (z_r * z_r + z_i * z_i) > 4) {  // diverge
+                    if( (z_r * z_r + z_i * z_i) > 4)   // diverge
                         break;
-                    }
+
                     t++;
                 }
                 
-                if(t < 100) {           // z diverged, not in the set
+                if(t < 100)            // z diverged, not in the set
                     image.setRGB( (int)i, (int)j,  colorArray[t]);
-                }
-                else if (t % 2 == 0){   // if even, mark for visual effects
+                else if (t % 2 == 0)  // if even, mark for visual effects
                     image.setRGB( (int)i, (int)j, 0xFF000000 );
-                }
-                else {                  // z might be in the set
+                else                   // z might be in the set
                     image.setRGB( (int)i, (int)j,  0xFF000000);
-                }
                 startY += delta_Y;
             }
             startX += delta_X;
@@ -311,8 +254,8 @@ class ImageFrame extends JFrame
 
         double sY = startY;
         
-        double delta_X = (endX - startX) / (600 - 1);         // change in x per sample
-        double delta_Y = (endY - startY) / (450 - 1);         // change in y per sample
+        double delta_X = (endX - startX) / (WIDTH - 1);         // change in x per sample
+        double delta_Y = (endY - startY) / (HEIGHT - 1);         // change in y per sample
         
         
         for(double i = 0; i < image.getWidth(); i++) {
@@ -331,21 +274,19 @@ class ImageFrame extends JFrame
                     z0 = ( z0 * z0 - z1 * z1 ) + u_r;
                     z1 = ( temp * z1 + temp * z1 ) + u_i;
                     
-                    if( (z0 * z0 + z1 * z1) > 4) {  // diverge
+                    if( (z0 * z0 + z1 * z1) > 4)   // diverge
                         break;
-                    }
+                    
                     t++;
                 }
                 
-                if(t < 100) {          // z diverged, not in set
+                if(t < 100)          // z diverged, not in set
                     image.setRGB( (int)i, (int)j,  colorArray[t]);
-                }
-                else if (t % 2 == 0){
+                else if (t % 2 == 0)
                     image.setRGB( (int)i, (int)j, 0xFF000000 );
-                }
-                else {                 // z might be in the set
+                else               // z might be in the set
                     image.setRGB( (int)i, (int)j,  0xFF000000);
-                }
+            
                 startY += delta_Y;
             }
             startX += delta_X;
@@ -468,7 +409,7 @@ class ImageFrame extends JFrame
     
     private int stringToInt(String s) { // convert string to integer, accepts hexadecimal numbers too
         int n;
-        try{                            // try to parse integer value from the string
+        try {                            // try to parse integer value from the string
             if( s.charAt(0) == '0' && (s.charAt(1) == 'x' || s.charAt(1) == 'X') ) {
                 n = (int) Long.parseLong( s.substring( 2, s.length() ), 16 );
             }
@@ -476,12 +417,11 @@ class ImageFrame extends JFrame
                 n = Integer.parseInt( s );
             }
         }
-        catch( NumberFormatException e )
-            {
-                JOptionPane.showMessageDialog( this, e );
-                colorsConfigured = false;
-                return 0;
-            }
+        catch( NumberFormatException e ) {
+            JOptionPane.showMessageDialog( this, e );
+            colorsConfigured = false;
+            return 0;
+        }
         return n;
     }
     
@@ -516,17 +456,15 @@ class ImageFrame extends JFrame
         }
         populateColorArray();           // repopulate the Color array with new configuration
         if(image != null) {             // if image exists, redraw it with the new colors
-            if(MandelbrotImage) {
+            if(MandelbrotImage) 
                 Mandelbrot("");
-            }
-            else if(JuliaImage) {
+            else if(JuliaImage) 
                 Julia("");
-            }
         }
     }
     
     private void setupImage() {
-        image = new BufferedImage(600, 450, BufferedImage.TYPE_INT_ARGB);
+        image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
         g2d = (Graphics2D) image.createGraphics();
         g2d.setColor( Color.WHITE );
         g2d.fillRect(0, 0, image.getWidth(), image.getHeight());
@@ -566,12 +504,10 @@ class ImageFrame extends JFrame
         x1 = .9875;
         y1 = .9875;
         
-        if(MandelbrotImage){
+        if(MandelbrotImage)
             Mandelbrot("");
-        }
-        else{
+        else
             Julia("");
-        }
     }
     
     private void zoomOut() {
@@ -582,12 +518,10 @@ class ImageFrame extends JFrame
         x1 = 1.025;
         y1 = 1.025;
         
-        if(MandelbrotImage){
+        if(MandelbrotImage)
             Mandelbrot("");
-        }
-        else{
+        else
             Julia("");
-        }
     }
 
     class FractalDisplayPanel extends JPanel
@@ -619,38 +553,26 @@ class ImageFrame extends JFrame
             setPreferredSize( size );
             MAX_X = WIDTH - 1;
             MAX_Y = HEIGHT - 1;
-            addMouseListener( new MouseAdapter()
-            {
-                public void mousePressed( MouseEvent event )
-                {
+            addMouseListener( new MouseAdapter() {
+                public void mousePressed( MouseEvent event ) {
                     if(event.getButton() == MouseEvent.BUTTON1)
-                    {
                         LMBisPressed( event.getPoint() );
-                    }
                     else if(event.getButton() == MouseEvent.BUTTON2)
-                    {
                         RMBisPressed( event.getPoint() );
-                    }
                     else if(event.getButton() == MouseEvent.BUTTON3)
-                    {
                         RMBisPressed( event.getPoint() );
-                    }
                 }
             } );
-            addMouseMotionListener( new MouseMotionAdapter()
-            {
-                public void mouseDragged(MouseEvent event)
-                {
+            addMouseMotionListener( new MouseMotionAdapter() {
+                public void mouseDragged(MouseEvent event) {
                     updateSelection( event.getPoint() );
                 }
-            } );
-            addMouseListener( new MouseAdapter()
-            {
-                public void mouseReleased(MouseEvent event)
-                {
+            });
+            addMouseListener( new MouseAdapter() {
+                public void mouseReleased(MouseEvent event) {
                     mouseIsReleased( event.getPoint() );
                 }
-            } );
+            });
         }
         //------------------------------------------------------------------------
         // accessors - get points defining the area selected
