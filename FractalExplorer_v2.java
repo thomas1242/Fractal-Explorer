@@ -24,16 +24,16 @@ class ImageFrame extends JFrame {
     private int WIDTH, HEIGHT;
     private BufferedImage image;
     private Graphics2D g2d;
-    private int[] colorArray;
-    double x0, y0, x1, y1;
+    private int[] colors;
+
+    boolean Mandelbrot, Julia;
+    boolean zoomDirection = true;
+    private Timer timer;
+
+    double x0, y0, x1, y1;              // zoom factor
     double currWidth, currHeight;
     double topLeftX, topLeftY;
-    double[] U;
-    boolean MandelbrotImage, JuliaImage;
-    boolean currentDirection = true;
     double zoom_destination_x, zoom_destination_y;
-    private Timer timer;
-    int framesPerSec;
 
     public ImageFrame(int width, int height) {
         this.WIDTH = width;
@@ -42,19 +42,19 @@ class ImageFrame extends JFrame {
         this.setSize(width, height);
         setupImage();
         addMenu();
-        Mandelbrot("default");
+        Mandelbrot();
     }
 
     private void addMenu() {
         JMenu fileMenu = new JMenu("File");
         JMenuItem Mandelbrot = new JMenuItem("Mandelbrot");
         Mandelbrot.addActionListener( e -> {
-            new Thread(() -> Mandelbrot("default")).start();
+            SwingUtilities.invokeLater(() -> { freshImage(); this.Mandelbrot = true; Julia = false; Mandelbrot(); });
         });
         fileMenu.add(Mandelbrot);
         JMenuItem Julia = new JMenuItem("Julia");
-        Julia.addActionListener(e -> {
-            new Thread(() -> Julia("default")).start();
+        Julia.addActionListener( e -> {
+            SwingUtilities.invokeLater(() -> { freshImage(); this.Mandelbrot = false; this.Julia = true; Julia(); });
         });
         fileMenu.add(Julia);
         JMenuItem save_image = new JMenuItem("Save image");
@@ -75,16 +75,14 @@ class ImageFrame extends JFrame {
     }
 
     private void configureFPS(boolean isNew) {
+        int framesPerSec = 30;
         if(!isNew) {
             String s = JOptionPane.showInputDialog("Frames per second (default: 30 fps):");   // Prompt the user
-            if(s == null)
-                return;
             try{                                           // enclose code that might throw an exception with a try block
                 framesPerSec = Integer.parseInt(s);     // parse int from user's input string
             }
             catch(NumberFormatException e) {             // catch and handle potential exception
                 JOptionPane.showMessageDialog(this, e);
-                return;
             }
         }
 
@@ -93,19 +91,12 @@ class ImageFrame extends JFrame {
             topLeftX += ((zoom_destination_x / (image.getWidth()  - 1)) - 0.5) * currWidth;
             topLeftY += ((zoom_destination_y / (image.getHeight() - 1)) - 0.5) * currHeight;
 
-            if(currentDirection)
-                zoomIn();
-            else
-                zoomOut();
+            if(zoomDirection) zoomIn();
+            else                 zoomOut();
 
             repaint();
             timer.restart();
         });
-    }
-
-    private double[] getMu() {
-        //try u = -0.8 + 0.156i or u = 0.285 +0.01i
-        return new double[]{-0.8, 0.156};
     }
 
     private void saveImage() {
@@ -121,37 +112,27 @@ class ImageFrame extends JFrame {
         }
     }
 
-    private void Julia(String s) {
-        if(s == "default")
-            freshImage();
-
-        JuliaImage = true;
-        MandelbrotImage = false;
-        U = getMu();
-
-        double startX = x0 * currWidth + topLeftX;
-        double startY = y0 * currHeight + topLeftY;
+    private void Julia() {
+        double startX = topLeftX = x0 * currWidth + topLeftX;
+        double startY = topLeftY = y0 * currHeight + topLeftY;
         double endX = x1 * currWidth + topLeftX;
         double endY = y1 * currHeight + topLeftY;
 
-        topLeftX = startX;
-        topLeftY = startY;
         currWidth = endX - startX;
         currHeight = endY - startY;
-
-        double z_r =  (double)(startX/(image.getWidth()-1)) * 4 - 2;        // sample the complex plane
-        double z_i =  1.5 - (double)(startY/(image.getHeight()-1)) * 3;
-        double sY = startY;
 
         double delta_X = (endX - startX) / (WIDTH - 1);         // change in x per sample
         double delta_Y = (endY - startY) / (HEIGHT - 1);         // change in y per sample
 
-        int t = 0;
+        double[] U = new double[]{-0.8, 0.156}; // try u = -0.8 + 0.156i or u = 0.285 +0.01i
+        double z_r, z_i;       // sample the complex plane
+
+        int t;
         for(double i = 0; i < image.getWidth(); i++) {
-            startY = sY;
+            startY = topLeftY;
             for(double j = 0; j < image.getHeight(); j++) {                 // for each pixel in the image
-                z_r =  (double)(startX/(image.getWidth()-1)) * 4 - 2;       // sample the complex plane
-                z_i =  1.5 - (double)(startY/(image.getHeight()-1)) * 3;
+                z_r =  (startX/(image.getWidth()-1)) * 4 - 2;       // sample the complex plane
+                z_i =  1.5 - (startY/(image.getHeight()-1)) * 3;
                 t = 0;
 
                 while(t != 100) {  // while t != tMax
@@ -165,7 +146,7 @@ class ImageFrame extends JFrame {
                 }
 
                 if(t < 100)            // z diverged, not in the set
-                    image.setRGB((int)i, (int)j,  colorArray[t]);
+                    image.setRGB((int)i, (int)j,  colors[t]);
                 else if (t % 2 == 0)  // if even, mark for visual effects
                     image.setRGB((int)i, (int)j, 0xFF000000);
                 else                   // z might be in the set
@@ -177,39 +158,26 @@ class ImageFrame extends JFrame {
         repaint();
     }
 
-    private void Mandelbrot(String s) {
-        if(s == "default")
-            freshImage();
-
-        MandelbrotImage = true;
-        JuliaImage  = false;
-
-        int t = 0;
-        double z0 = 0, z1 = 0;
-        double startX = x0 * currWidth + topLeftX;
-        double startY = y0 * currHeight + topLeftY;
+    private void Mandelbrot() {
+        double startX = topLeftX = x0 * currWidth + topLeftX;
+        double startY = topLeftY = y0 * currHeight + topLeftY;
         double endX = x1 * currWidth + topLeftX;
         double endY = y1 * currHeight + topLeftY;
 
-        topLeftX = startX;
-        topLeftY = startY;
         currWidth = endX - startX;
         currHeight = endY - startY;
-
-        double u_r =  (double)(startX/(image.getWidth()-1)) * 4 - 2;
-        double u_i =  1.5 - (double)(startY/(image.getHeight()-1)) * 3;
-
-        double sY = startY;
 
         double delta_X = (endX - startX) / (WIDTH - 1);         // change in x per sample
         double delta_Y = (endY - startY) / (HEIGHT - 1);         // change in y per sample
 
+        int t;
+        double u_r, u_i, z0, z1;
 
         for(double i = 0; i < image.getWidth(); i++) {
-            startY = sY;
+            startY = topLeftY;
             for(double j = 0; j < image.getHeight(); j++) {              // for each pixel in the image
-                u_r =        (double)(startX / (image.getWidth()  - 1)) * 4 - 2; // sample the complex plane
-                u_i =  1.5 - (double)(startY / (image.getHeight() - 1)) * 3;
+                u_r =        (startX / (image.getWidth()  - 1)) * 4 - 2; // sample the complex plane
+                u_i =  1.5 - (startY / (image.getHeight() - 1)) * 3;
                 z0 = z1 = 0;
                 t = 0;
 
@@ -224,7 +192,7 @@ class ImageFrame extends JFrame {
                 }
 
                 if(t < 100)          // z diverged, not in set
-                    image.setRGB((int)i, (int)j,  colorArray[t]);
+                    image.setRGB((int)i, (int)j,  colors[t]);
                 else if (t % 2 == 0)
                     image.setRGB((int)i, (int)j, 0xFF000000);
                 else               // z might be in the set
@@ -238,7 +206,7 @@ class ImageFrame extends JFrame {
     }
 
     private void populateColorArray() {
-        colorArray =  new int[100];      
+        colors =  new int[100];
         int start, end;
 
         start = (255 << 24) | (4 << 16) | (15 << 8) | 114;        // start color
@@ -249,17 +217,17 @@ class ImageFrame extends JFrame {
         double value_G = (value >> 8) & 0xFF;
         double value_B = (value     ) & 0xFF;
 
-        double[] deltas = getDeltas(start, end, colorArray.length / 5 - 1);  // compute the change per step for each channel
-        colorArray[0] = start;
-        colorArray[colorArray.length / 5 - 1] = end;
+        double[] deltas = getDeltas(start, end, colors.length / 5 - 1);  // compute the change per step for each channel
+        colors[0] = start;
+        colors[colors.length / 5 - 1] = end;
 
         // Fill first 1/5 of colors array with interpolated Colors
-        for (int i = 1; i < colorArray.length / 5 - 1; i++) {
+        for (int i = 1; i < colors.length / 5 - 1; i++) {
             value_R += deltas[0];
             value_G += deltas[1];
             value_B += deltas[2];
             intARGB = (0xFF000000) | ((int)value_R << 16) | ((int)value_G << 8) | (int)value_B;
-            colorArray[i] = intARGB;
+            colors[i] = intARGB;
         }
 
         end = (255 << 24) | (255 << 16) | (80 << 8) | 0;
@@ -269,17 +237,17 @@ class ImageFrame extends JFrame {
         value_G = (value >> 8) & 0xFF;
         value_B = (value     ) & 0xFF;
 
-        deltas = getDeltas(start, end, 3*colorArray.length/5);
-        colorArray[colorArray.length / 5 ] = start;
-        colorArray[4 * colorArray.length/5 - 1] = end;
+        deltas = getDeltas(start, end, 3* colors.length/5);
+        colors[colors.length / 5 ] = start;
+        colors[4 * colors.length/5 - 1] = end;
 
         // Fill 1/5 to 4/5 of the colors array with interpolated Colors
-        for (int i = colorArray.length / 5; i < 4 * colorArray.length/5 - 1; i++) {
+        for (int i = colors.length / 5; i < 4 * colors.length/5 - 1; i++) {
             value_R += deltas[0];
             value_G += deltas[1];
             value_B += deltas[2];
             intARGB = (0xFF000000) | ((int)value_R << 16) | ((int)value_G << 8) | (int)value_B;
-            colorArray[i] = intARGB;
+            colors[i] = intARGB;
         }
 
         end = (255 << 24) | (37 << 16) | (14 << 8) | 255;
@@ -289,17 +257,17 @@ class ImageFrame extends JFrame {
         value_G = (value >> 8) & 0xFF;
         value_B = (value     ) & 0xFF;
 
-        deltas = getDeltas(start, end, 4*colorArray.length/5 -1);
-        colorArray[4 * colorArray.length / 5  ] = start;
-        colorArray[colorArray.length - 1] = end;
+        deltas = getDeltas(start, end, 4* colors.length/5 -1);
+        colors[4 * colors.length / 5  ] = start;
+        colors[colors.length - 1] = end;
 
         // Fill 4/5 to the end of the colors array with interpolated Colors
-        for (int i = 4*colorArray.length / 5; i < colorArray.length - 1; i++) {
+        for (int i = 4* colors.length / 5; i < colors.length - 1; i++) {
             value_R += deltas[0];
             value_G += deltas[1];
             value_B += deltas[2];
             intARGB = (0xFF000000) | ((int)value_R << 16) | ((int)value_G << 8) | (int)value_B;
-            colorArray[i] = intARGB;
+            colors[i] = intARGB;
         }
     }
 
@@ -313,8 +281,6 @@ class ImageFrame extends JFrame {
     private void setupImage() {
         image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
         g2d = (Graphics2D) image.createGraphics();
-        g2d.setColor(Color.WHITE);
-        g2d.fillRect(0, 0, image.getWidth(), image.getHeight());
         populateColorArray();
 
         FractalDisplayPanel panel = new FractalDisplayPanel(image);
@@ -324,13 +290,16 @@ class ImageFrame extends JFrame {
         this.getContentPane().add(label, BorderLayout.SOUTH);
         this.pack();
 
-        framesPerSec = 30;
         freshImage();
     }
 
-    private void freshImage() {         // clear image state, set white background
-        g2d.setColor(Color.WHITE);
+    private void drawBackground(Color color) {
+        g2d.setColor(color);
         g2d.fillRect(0, 0, image.getWidth(), image.getHeight());
+    }
+
+    private void freshImage() {         // clear image state, set white background
+        drawBackground(Color.WHITE);
         x0 = y0 = 0;
         x1 = y1 = 1;
         topLeftX = topLeftY = 0;
@@ -341,44 +310,30 @@ class ImageFrame extends JFrame {
     }
 
     private void zoomIn() {
-        if(image == null || (MandelbrotImage == false && JuliaImage == false))
-            return;
         x0 = y0 = .0125;
         x1 = y1 = .9875;
 
-        if(MandelbrotImage)
-            Mandelbrot("");
-        else
-            Julia("");
+        if(Mandelbrot) Mandelbrot();
+        else                Julia();
     }
 
     private void zoomOut() {
-        if(image == null || (MandelbrotImage == false && JuliaImage == false))
-            return;
         x0 = y0 = -.025;
         x1 = y1 = 1.025;
 
-        if(MandelbrotImage)
-            Mandelbrot("");
-        else
-            Julia("");
+        if(Mandelbrot) Mandelbrot();
+        else                Julia();
     }
 
     class FractalDisplayPanel extends JPanel {
 
-        private final int WIDTH;
-        private final int HEIGHT;
         private BufferedImage image;
 
         public FractalDisplayPanel(BufferedImage image) {
             this.image = image;
             g2d = image.createGraphics();
-            WIDTH = image.getWidth();
-            HEIGHT = image.getHeight();
-            Dimension size = new Dimension(WIDTH, HEIGHT);
-            setMinimumSize(size);
-            setMaximumSize(size);
-            setPreferredSize(size);
+            Dimension size = new Dimension(image.getWidth(), image.getHeight());
+            setMinimumSize(size); setMaximumSize(size); setPreferredSize(size);
             addMouseListener(new MouseAdapter() {
                 public void mousePressed(MouseEvent event) {
                     if(event.getButton() == MouseEvent.BUTTON1)
@@ -414,14 +369,14 @@ class ImageFrame extends JFrame {
         private void LMBisPressed(Point p) {
             zoom_destination_x = p.getX();      // update zoom destination
             zoom_destination_y = p.getY();
-            currentDirection = true;            // zooming in
+            zoomDirection = true;            // zooming in
             timer.start();                      // start zooming
         }
 
         private void RMBisPressed(Point p) {
             zoom_destination_x = p.getX();      // update zoom destination
             zoom_destination_y = p.getY();
-            currentDirection = false;           // zooming out
+            zoomDirection = false;           // zooming out
             timer.start();                      // start zooming
         }
     }
