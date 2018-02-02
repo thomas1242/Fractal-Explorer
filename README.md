@@ -29,6 +29,3 @@ java FractalExplorer_v2
  ![alt tag](images/mandelbrot.gif)
  
  ![alt tag](images/julia.gif)
- 
-
- ![alt tage](images/menu.png)
