@@ -1,3 +1,5 @@
+package com.company;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.*;
@@ -5,7 +7,7 @@ import java.io.*;
 import javax.imageio.*;
 import javax.swing.*;
 
-public class FractalExplorer_v2 {
+public class Main {
     private static final int WIDTH  = (int)(Toolkit.getDefaultToolkit().getScreenSize().getWidth() * .75);
     private static final int HEIGHT = (int)(Toolkit.getDefaultToolkit().getScreenSize().getHeight() * .75);
 
@@ -30,10 +32,11 @@ class ImageFrame extends JFrame {
     boolean zoomDirection = true;
     private Timer timer;
 
-    double x0, y0, x1, y1;              // zoom factor
+    double x0, y0, x1, y1;              // scale factor, make local, functon to get
     double currWidth, currHeight;
     double topLeftX, topLeftY;
     double zoom_destination_x, zoom_destination_y;
+
 
     public ImageFrame(int width, int height) {
         this.WIDTH = width;
@@ -325,13 +328,14 @@ class ImageFrame extends JFrame {
         else                Julia();
     }
 
-    class FractalDisplayPanel extends JPanel {
+    class FractalDisplayPanel extends JLayeredPane {
 
         private BufferedImage image;
 
         public FractalDisplayPanel(BufferedImage image) {
             this.image = image;
             g2d = image.createGraphics();
+            setBounds(0, 0, image.getWidth(), image.getHeight());
             Dimension size = new Dimension(image.getWidth(), image.getHeight());
             setMinimumSize(size); setMaximumSize(size); setPreferredSize(size);
             addMouseListener(new MouseAdapter() {
@@ -354,6 +358,22 @@ class ImageFrame extends JFrame {
                     timer.stop();                       // stop zooming
                 }
             });
+
+            JButton button = createButton("Julia", Color.BLACK, 15);
+            button.addActionListener(e -> {
+                SwingUtilities.invokeLater(() -> { freshImage(); Julia(); });
+            });
+
+            add(button);
+            button.setBounds(0, 0, 100, 50);
+        }
+
+        private JButton createButton(String s, Color color, int fontSize) {
+            JButton button = new JButton(s);
+            button.setForeground(color);
+            button.setFont(new Font("plain", Font.BOLD, fontSize));
+            button.setOpaque(false);
+            return button;
         }
 
         public void paintComponent(Graphics g) {
