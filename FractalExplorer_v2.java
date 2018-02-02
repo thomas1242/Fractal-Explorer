@@ -1,5 +1,3 @@
-package com.company;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.*;
@@ -7,7 +5,7 @@ import java.io.*;
 import javax.imageio.*;
 import javax.swing.*;
 
-public class Main {
+public class FractalExplorer_v2 {
     private static final int WIDTH  = (int)(Toolkit.getDefaultToolkit().getScreenSize().getWidth() * .75);
     private static final int HEIGHT = (int)(Toolkit.getDefaultToolkit().getScreenSize().getHeight() * .75);
 
@@ -358,22 +356,6 @@ class ImageFrame extends JFrame {
                     timer.stop();                       // stop zooming
                 }
             });
-
-            JButton button = createButton("Julia", Color.BLACK, 15);
-            button.addActionListener(e -> {
-                SwingUtilities.invokeLater(() -> { freshImage(); Julia(); });
-            });
-
-            add(button);
-            button.setBounds(0, 0, 100, 50);
-        }
-
-        private JButton createButton(String s, Color color, int fontSize) {
-            JButton button = new JButton(s);
-            button.setForeground(color);
-            button.setFont(new Font("plain", Font.BOLD, fontSize));
-            button.setOpaque(false);
-            return button;
         }
 
         public void paintComponent(Graphics g) {
