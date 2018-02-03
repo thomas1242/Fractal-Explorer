@@ -1,7 +1,7 @@
 import java.awt.*;
 import javax.swing.*;
 
-public class FractalExplorer_v2 {
+public class Main {
     private static final int WIDTH  = (int)(Toolkit.getDefaultToolkit().getScreenSize().getWidth() * .75);
     private static final int HEIGHT = (int)(Toolkit.getDefaultToolkit().getScreenSize().getHeight() * .75);
 

@@ -6,7 +6,7 @@ import javax.imageio.*;
 import javax.swing.*;
 import java.awt.geom.*;
 
-public class FractalExplorer_v1
+public class Main
 {
     private static final int WIDTH = 600;
     private static final int HEIGHT = 450;
@@ -48,6 +48,7 @@ class ImageFrame extends JFrame
         this.setSize( width, height );
         setupImage();                                            // setup bufferedImage
         addMenu();                                               // add menu bar
+        Mandelbrot();
     }
     
     private void addMenu() {

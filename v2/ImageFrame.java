@@ -168,7 +168,7 @@ public class ImageFrame extends JFrame {
         // Fill first 1/5 with interpolated Colors
         int start = (255 << 24) | (4 << 16) | (15 << 8) | 114;        // start color
         int end =   (255 << 24) | (132 << 16) | (248 << 8) | 255;
-        int[] colorOne = Interpolation.getColors(start, end,  colors.length / 5);
+        int[] colorOne = getColors(start, end,  colors.length / 5);
         for (int i = 0; i < colors.length / 5; i++)
             colors[i] = colorOne[i];
 
@@ -176,7 +176,7 @@ public class ImageFrame extends JFrame {
         start =   (255 << 24) | (255 << 16) | (238 << 8) | 0;
 
         // Fill 1/5 to 4/5
-        int[] colorTwo = Interpolation.getColors(start, end,  3 * colors.length / 5);
+        int[] colorTwo = getColors(start, end,  3 * colors.length / 5);
         for (int i = colors.length / 5; i < 4 * colors.length / 5; i++)
             colors[i] = colorTwo[i - colors.length / 5];
 
@@ -184,9 +184,35 @@ public class ImageFrame extends JFrame {
         start =  (255 << 24) | (109 << 16) | (35 << 8) | 188;
 
         // Fill 4/5 to the end of the colors array
-        int[] colorThree = Interpolation.getColors(start, end, colors.length / 5);
+        int[] colorThree = getColors(start, end, colors.length / 5);
         for (int i = 4 * colors.length / 5; i < colors.length ; i++)
             colors[i] = colorThree[i - 4 * colors.length / 5];
+    }
+
+    public static int[] getColors(int startRGB, int endRGB, int length) {
+        int[] colors = new int[length];
+
+        colors[0]          = startRGB;
+        colors[length - 1] = endRGB;
+
+        double R = startRGB >> 16 & 0xFF;
+        double G = startRGB >> 8  & 0xFF;
+        double B = startRGB       & 0xFF;
+
+        double deltaR = ((endRGB >> 16 & 0xFF) - (startRGB >> 16 & 0xFF)) / 1.0 / length;
+        double deltaG = ((endRGB >> 8  & 0xFF) - (startRGB >> 8  & 0xFF)) / 1.0 / length;
+        double deltaB = ((endRGB       & 0xFF) - (startRGB       & 0xFF)) / 1.0 / length;
+
+        for (int i = 1; i < length - 1; i++) {   // fill 1D array with interpolated colors
+            R += deltaR;
+            G += deltaG;
+            B += deltaB;
+
+            int intARGB = 0xFF << 24 | (int)R << 16 | (int)G << 8 | (int)B;
+            colors[i] = intARGB ;
+        }
+
+        return colors;
     }
 
     private void setupImage() {
