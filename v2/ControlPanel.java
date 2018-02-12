@@ -21,25 +21,25 @@ public class ControlPanel extends JPanel {
     private void addComponents() {
         setLayout(new GridLayout(0, 1));
 
-        JButton juliaButton = createButton("Julia", Color.BLACK, 15);
+        JButton juliaButton = createButton("Julia", Color.BLACK, 13);
         juliaButton.addActionListener(e -> {
             imageFrame.freshImage();
             imageFrame.Mandelbrot = false;
             imageFrame.Julia = true;
             imageFrame.Julia();
         });
-        JButton mandelbrotButton = createButton("Mandelbrot", Color.BLACK, 15);
+        JButton mandelbrotButton = createButton("Mandelbrot", Color.BLACK, 13);
         mandelbrotButton.addActionListener(e -> {
             imageFrame.freshImage();
             imageFrame.Mandelbrot = true;
             imageFrame.Julia = false;
             imageFrame.Mandelbrot();
         });
-        JButton saveImage = createButton("Save Image", Color.BLACK, 15);
+        JButton saveImage = createButton("Save Image", Color.BLACK, 13);
         saveImage.addActionListener(e -> {
             imageFrame.saveImage();
         });
-        JButton configFrameRate = createButton("FrameRate", Color.BLACK, 15);
+        JButton configFrameRate = createButton("FrameRate", Color.BLACK, 13);
         configFrameRate.addActionListener(e -> {
             imageFrame.configureFPS(false);
         });
