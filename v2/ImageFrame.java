@@ -1,8 +1,8 @@
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.*;
+import javax.imageio.*;
 import java.io.*;
 
 public class ImageFrame extends JFrame {
@@ -12,8 +12,7 @@ public class ImageFrame extends JFrame {
     private Graphics2D g2d;
     private int[] colors;
 
-    boolean Mandelbrot, Julia;
-    boolean zoomDirection = true;
+    String currentSet = "Mandelbrot";
     private Timer timer;
 
     double x0, y0, x1, y1;              // scale factor, make local, function to get
@@ -21,6 +20,7 @@ public class ImageFrame extends JFrame {
     double topLeftX, topLeftY;
     double zoom_destination_x, zoom_destination_y;
 
+    double scaleFactor = 0.005;
 
     public ImageFrame(int width, int height) {
         this.WIDTH = width;
@@ -28,28 +28,18 @@ public class ImageFrame extends JFrame {
         this.setTitle("Fractal Explorer");
         this.setSize(width, height);
         setupImage();
+        configureFPS(30);
         Mandelbrot();
     }
 
-    public void configureFPS(boolean isNew) {
-        int framesPerSec = 30;
-        if(!isNew) {
-            String s = JOptionPane.showInputDialog("Frames per second (default: 30 fps):");   // Prompt the user
-            try{                                           // enclose code that might throw an exception with a try block
-                framesPerSec = Integer.parseInt(s);     // parse int from user's input string
-            }
-            catch(NumberFormatException e) {             // catch and handle potential exception
-                JOptionPane.showMessageDialog(this, e);
-            }
-        }
-
-        timer = new Timer((1000 / framesPerSec),  e -> {
+    public void configureFPS(int fps) {
+        timer = new Timer(1000 / fps,  e -> {
             timer.stop();
             topLeftX += ((zoom_destination_x / (image.getWidth()  - 1)) - 0.5) * currWidth;
             topLeftY += ((zoom_destination_y / (image.getHeight() - 1)) - 0.5) * currHeight;
 
-            if(zoomDirection) zoomIn();
-            else              zoomOut();
+            if(currentSet.equals("Mandelbrot")) Mandelbrot();
+            else                                Julia();
 
             repaint();
             timer.restart();
@@ -112,7 +102,6 @@ public class ImageFrame extends JFrame {
             }
             startX += delta_X;
         }
-        repaint();
     }
 
     public void Mandelbrot() {
@@ -159,7 +148,6 @@ public class ImageFrame extends JFrame {
             }
             startX += delta_X;
         }
-        repaint();
     }
 
     private void populateColorArray() {
@@ -242,24 +230,21 @@ public class ImageFrame extends JFrame {
         topLeftX = topLeftY = 0;
         currWidth = image.getWidth();
         currHeight = image.getHeight();
-        configureFPS(true);
         repaint();
     }
 
     private void zoomIn() {
-        x0 = y0 = .0125;
-        x1 = y1 = .9875;
-
-        if(Mandelbrot) Mandelbrot();
-        else                Julia();
+        x0 = y0 = scaleFactor;
+        x1 = y1 = 1 - scaleFactor;
     }
 
     private void zoomOut() {
-        x0 = y0 = -.025;
-        x1 = y1 = 1.025;
+        x0 = y0 = -scaleFactor;
+        x1 = y1 = 1 + scaleFactor;
+    }
 
-        if(Mandelbrot) Mandelbrot();
-        else                Julia();
+    public  void setZoomFactor(double x) {
+        scaleFactor = x;
     }
 
     public BufferedImage getImage() {
@@ -321,14 +306,14 @@ public class ImageFrame extends JFrame {
         private void LMBisPressed(Point p) {
             zoom_destination_x = p.getX();      // update zoom destination
             zoom_destination_y = p.getY();
-            zoomDirection = true;            // zooming in
+            zoomIn();
             timer.start();                      // start zooming
         }
 
         private void RMBisPressed(Point p) {
             zoom_destination_x = p.getX();      // update zoom destination
             zoom_destination_y = p.getY();
-            zoomDirection = false;           // zooming out
+            zoomOut();
             timer.start();                      // start zooming
         }
     }

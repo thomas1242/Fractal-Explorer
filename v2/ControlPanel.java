@@ -1,4 +1,6 @@
 import java.awt.*;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import javax.swing.*;
 
 public class ControlPanel extends JPanel {
@@ -24,30 +26,69 @@ public class ControlPanel extends JPanel {
         JButton juliaButton = createButton("Julia", Color.BLACK, 13);
         juliaButton.addActionListener(e -> {
             imageFrame.freshImage();
-            imageFrame.Mandelbrot = false;
-            imageFrame.Julia = true;
+            imageFrame.currentSet = "Julia";
             imageFrame.Julia();
         });
         JButton mandelbrotButton = createButton("Mandelbrot", Color.BLACK, 13);
         mandelbrotButton.addActionListener(e -> {
             imageFrame.freshImage();
-            imageFrame.Mandelbrot = true;
-            imageFrame.Julia = false;
+            imageFrame.currentSet = "Mandelbrot";
             imageFrame.Mandelbrot();
         });
         JButton saveImage = createButton("Save Image", Color.BLACK, 13);
-        saveImage.addActionListener(e -> {
-            imageFrame.saveImage();
-        });
-        JButton configFrameRate = createButton("FrameRate", Color.BLACK, 13);
-        configFrameRate.addActionListener(e -> {
-            imageFrame.configureFPS(false);
-        });
+        saveImage.addActionListener(e -> imageFrame.saveImage());
 
         add(mandelbrotButton);
         add(juliaButton);
-        add(configFrameRate);
         add(saveImage);
+        add(animationSpeedSlider());
+        add(createZoomGranularitySlider());
+    }
+
+    private JPanel animationSpeedSlider() {
+        JLabel label = createLabel(50 + " fps", new Color(0xffdddddd), 14);
+        JSlider slider = createSlider(1, 100, 30);
+        slider.addChangeListener(e -> {
+            label.setText(slider.getValue() + " fps");
+            imageFrame.configureFPS(slider.getValue());
+        });
+        return createSliderPanel(label, slider);
+    }
+
+    private JPanel createZoomGranularitySlider() {
+        JLabel label = createLabel("0.5% zoom", new Color(0xffdddddd), 14);
+        JSlider slider = createSlider(0, 50, 5);
+        NumberFormat formatter = new DecimalFormat("#0.0");
+        slider.addChangeListener(e -> {
+            label.setText(formatter.format(slider.getValue() / 1.0 / 1000 * 100) + "% zoom");
+            imageFrame.setZoomFactor(slider.getValue() / 1.0 / 1000);
+        });
+        return createSliderPanel(label, slider);
+    }
+
+    private JLabel createLabel(String s, Color color, int fontSize) {
+        JLabel label = new JLabel(s);
+        label.setFont(new Font("plain", Font.BOLD, fontSize));
+        label.setForeground(color);
+        return label;
+    }
+
+    private JSlider createSlider(int low, int high, int value) {
+        JSlider slider = new JSlider(low, high, value);
+        slider.setMinorTickSpacing(1);
+        slider.setPaintTicks(false);
+        slider.setSnapToTicks(true);
+        return slider;
+    }
+
+    private JPanel createSliderPanel(JLabel label, JSlider slider) {
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(0, 1));
+        panel.add(label, BorderLayout.CENTER);
+        panel.add(slider, BorderLayout.SOUTH);
+        panel.setOpaque(false);
+        panel.setVisible(true);
+        return panel;
     }
 
     private JButton createButton(String s, Color color, int fontSize) {
