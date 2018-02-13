@@ -24,17 +24,9 @@ public class ControlPanel extends JPanel {
         setLayout(new GridLayout(0, 1));
 
         JButton juliaButton = createButton("Julia", Color.BLACK, 13);
-        juliaButton.addActionListener(e -> {
-            imageFrame.freshImage();
-            imageFrame.currentSet = "Julia";
-            imageFrame.Julia();
-        });
+        juliaButton.addActionListener(e -> imageFrame.freshImage("Julia"));
         JButton mandelbrotButton = createButton("Mandelbrot", Color.BLACK, 13);
-        mandelbrotButton.addActionListener(e -> {
-            imageFrame.freshImage();
-            imageFrame.currentSet = "Mandelbrot";
-            imageFrame.Mandelbrot();
-        });
+        mandelbrotButton.addActionListener(e -> imageFrame.freshImage("Mandelbrot"));
         JButton saveImage = createButton("Save Image", Color.BLACK, 13);
         saveImage.addActionListener(e -> imageFrame.saveImage());
 
@@ -56,9 +48,9 @@ public class ControlPanel extends JPanel {
     }
 
     private JPanel createZoomGranularitySlider() {
-        JLabel label = createLabel("0.5% zoom", new Color(0xffdddddd), 14);
+        JLabel label = createLabel("0.50% zoom", new Color(0xffdddddd), 14);
         JSlider slider = createSlider(0, 50, 5);
-        NumberFormat formatter = new DecimalFormat("#0.0");
+        NumberFormat formatter = new DecimalFormat("#0.00");
         slider.addChangeListener(e -> {
             label.setText(formatter.format(slider.getValue() / 1.0 / 1000 * 100) + "% zoom");
             imageFrame.setZoomFactor(slider.getValue() / 1.0 / 1000);
