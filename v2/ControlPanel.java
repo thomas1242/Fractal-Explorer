@@ -1,6 +1,6 @@
 import java.awt.*;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
+import java.awt.event.*;
+import java.text.*;
 import javax.swing.*;
 
 public class ControlPanel extends JPanel {
@@ -22,40 +22,20 @@ public class ControlPanel extends JPanel {
 
     private void addComponents() {
         setLayout(new GridLayout(0, 1));
-
-        JButton juliaButton = createButton("Julia", Color.BLACK, 13);
-        juliaButton.addActionListener(e -> imageFrame.freshImage("Julia"));
-        JButton mandelbrotButton = createButton("Mandelbrot", Color.BLACK, 13);
-        mandelbrotButton.addActionListener(e -> imageFrame.freshImage("Mandelbrot"));
-        JButton saveImage = createButton("Save Image", Color.BLACK, 13);
-        saveImage.addActionListener(e -> imageFrame.saveImage());
-
-        add(mandelbrotButton);
-        add(juliaButton);
-        add(saveImage);
+        add(createButton("Mandelbrot", Color.BLACK, 13, e -> imageFrame.freshImage("Mandelbrot")));
+        add(createButton("Julia",      Color.BLACK, 13, e -> imageFrame.freshImage("Julia")));
+        add(createButton("Save Image", Color.BLACK, 13, e -> imageFrame.saveImage()));
         add(animationSpeedSlider());
         add(createZoomGranularitySlider());
     }
 
-    private JPanel animationSpeedSlider() {
-        JLabel label = createLabel(50 + " fps", new Color(0xffdddddd), 14);
-        JSlider slider = createSlider(1, 100, 30);
-        slider.addChangeListener(e -> {
-            label.setText(slider.getValue() + " fps");
-            imageFrame.configureFPS(slider.getValue());
-        });
-        return createSliderPanel(label, slider);
-    }
-
-    private JPanel createZoomGranularitySlider() {
-        JLabel label = createLabel("0.50% zoom", new Color(0xffdddddd), 14);
-        JSlider slider = createSlider(0, 50, 5);
-        NumberFormat formatter = new DecimalFormat("#0.00");
-        slider.addChangeListener(e -> {
-            label.setText(formatter.format(slider.getValue() / 1.0 / 1000 * 100) + "% zoom");
-            imageFrame.setZoomFactor(slider.getValue() / 1.0 / 1000);
-        });
-        return createSliderPanel(label, slider);
+    private JButton createButton(String s, Color color, int fontSize, ActionListener e) {
+        JButton button = new JButton(s);
+        button.addActionListener(e);
+        button.setForeground(color);
+        button.setFont(new Font("plain", Font.BOLD, fontSize));
+        button.setOpaque(false);
+        return button;
     }
 
     private JLabel createLabel(String s, Color color, int fontSize) {
@@ -73,6 +53,27 @@ public class ControlPanel extends JPanel {
         return slider;
     }
 
+    private JPanel animationSpeedSlider() {
+        JLabel label = createLabel(30 + " fps", new Color(0xffdddddd), 14);
+        JSlider slider = createSlider(1, 100, 30);
+        slider.addChangeListener(e -> {
+            label.setText(slider.getValue() + " fps");
+            imageFrame.configureFPS(slider.getValue());
+        });
+        return createSliderPanel(label, slider);
+    }
+
+    private JPanel createZoomGranularitySlider() {
+        JLabel label = createLabel("1.50% zoom", new Color(0xffdddddd), 14);
+        JSlider slider = createSlider(0, 50, 15);
+        NumberFormat formatter = new DecimalFormat("#0.00");
+        slider.addChangeListener(e -> {
+            label.setText(formatter.format(slider.getValue() / 1.0 / 1000 * 100) + "% zoom");
+            imageFrame.setZoomFactor(slider.getValue() / 1.0 / 1000);
+        });
+        return createSliderPanel(label, slider);
+    }
+
     private JPanel createSliderPanel(JLabel label, JSlider slider) {
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(0, 1));
@@ -83,11 +84,4 @@ public class ControlPanel extends JPanel {
         return panel;
     }
 
-    private JButton createButton(String s, Color color, int fontSize) {
-        JButton button = new JButton(s);
-        button.setForeground(color);
-        button.setFont(new Font("plain", Font.BOLD, fontSize));
-        button.setOpaque(false);
-        return button;
-    }
 }

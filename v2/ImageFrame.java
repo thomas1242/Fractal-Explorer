@@ -53,7 +53,7 @@ public class ImageFrame extends JFrame {
         }
     }
 
-    public void AlgoPrep() {
+    public void runBoth() {
         double x0, y0, x1, y1;
         x0 = y0 = zoomIn ? scaleFactor: -scaleFactor;
         x1 = y1 = zoomIn ? 1 - scaleFactor : 1 + scaleFactor;
@@ -62,58 +62,56 @@ public class ImageFrame extends JFrame {
         topLeftY = y0 * currHeight + topLeftY;
         currWidth =  x1 * currWidth + topLeftX - topLeftX;
         currHeight = y1 * currHeight + topLeftY - topLeftY;
-    }
 
-    public void runBoth() {
-        AlgoPrep();
-        double startX = topLeftX;
         double delta_X = currWidth / (WIDTH - 1);         // change in x per sample
         double delta_Y = currHeight / (HEIGHT - 1);         // change in y per sample
-        int t;
+        double startX = topLeftX;
 
-        double u_r, u_i, z0, z1;
-        double[] U = new double[]{-0.8, 0.156}; // try u = -0.8 + 0.156i or u = 0.285 +0.01i
-        double z_r, z_i;       // sample the complex plane
+        double u_r, u_i, z_r, z_i;
+        u_r = !currentSet.equals("Mandelbrot") ? -0.8   : (topLeftX / (image.getWidth()  - 1)) * 4 - 2;
+        u_i = !currentSet.equals("Mandelbrot") ?  0.156 : 1.5 - (topLeftY / (image.getHeight() - 1)) * 3;
+        z_r =  currentSet.equals("Mandelbrot") ?  0     : (topLeftX / (image.getWidth()-1)) * 4 - 2;
+        z_i =  currentSet.equals("Mandelbrot") ?  0     :  1.5 - (topLeftY/(image.getHeight()-1)) * 3;
 
-            for(double i = 0; i < image.getWidth(); i++) {
-                double startY = topLeftY;
-                for(double j = 0; j < image.getHeight(); j++) {                 // for each pixel in the image
-                    // Mandelbrot
+        for(double i = 0; i < image.getWidth(); i++) {
+            double startY = topLeftY;
+            for(double j = 0; j < image.getHeight(); j++) {                 // for each pixel in the image
+               
+                // u_r = !currentSet.equals("Mandelbrot") ? -0.8   : u_r;
+                // u_i = !currentSet.equals("Mandelbrot") ?  0.156 : u_i;
+                // z_r =  currentSet.equals("Mandelbrot") ?  0     : (startX / (image.getWidth()-1)) * 4 - 2;
+                // z_i =  currentSet.equals("Mandelbrot") ?  0     : 1.5 - (startY / (image.getHeight()-1)) * 3;
+
+
+                if(currentSet.equals("Mandelbrot")) {
                     u_r =        (startX / (image.getWidth()  - 1)) * 4 - 2; // sample the complex plane
                     u_i =  1.5 - (startY / (image.getHeight() - 1)) * 3;
-                    z0 = z1 = 0;
-                    // Julia
-                    z_r =  (startX/(image.getWidth()-1)) * 4 - 2;       // sample the complex plane
+                    z_r = z_i = 0;
+                 }
+                 else {
+                    z_r =  (startX / (image.getWidth()-1)) * 4 - 2;       // sample the complex plane
                     z_i =  1.5 - (startY/(image.getHeight()-1)) * 3;
-
-                    t = 0;
-                    while(t++ != 100) {  // while t != tMax
-                        if(currentSet.equals("Mandelbrot")) {
-                            double temp = z0;               // z = z^2 + u
-                            z0 = (z0 * z0 - z1 * z1) + u_r;
-                            z1 = (temp * z1 + temp * z1) + u_i;
-                            if((z0 * z0 + z1 * z1) > 4)   // diverge
-                                break;
-                        }
-                        else {
-                            double temp = z_r;                  // z = z^2 + u
-                            z_r = (z_r * z_r - z_i * z_i) + U[0];
-                            z_i = (temp * z_i + temp * z_i) + U[1];
-                            if ((z_r * z_r + z_i * z_i) > 4)   // diverge
-                                break;
-                        }
-                    }
-
-                    if(t < 100)            // z diverged, not in the set
-                        image.setRGB((int)i, (int)j,  colors[t]);
-                    else if (t % 2 == 0)  // if even, mark for visual effects
-                        image.setRGB((int)i, (int)j, 0xFF000000);
-                    else                   // z might be in the set
-                        image.setRGB((int)i, (int)j,  0xFF000000);
-                    startY += delta_Y;
                 }
-                startX += delta_X;
+
+                int t = 0;
+                while(t++ != 100) {  // while t != tMax
+                    double temp = z_r;               // z = z^2 + u
+                    z_r = (z_r * z_r - z_i * z_i) + u_r;
+                    z_i = (temp * z_i + temp * z_i) + u_i;
+                    if(z_r * z_r + z_i * z_i > 4)   // diverge
+                        break; 
+                }
+
+                if(t < 100)            // z diverged, not in the set
+                    image.setRGB((int)i, (int)j,  colors[t]);
+                else if (t % 2 == 0)  // if even, mark for visual effects
+                    image.setRGB((int)i, (int)j, 0xFF000000);
+                else                   // z might be in the set
+                    image.setRGB((int)i, (int)j,  0xFF000000);
+                startY += delta_Y;
             }
+            startX += delta_X;
+        }
     }
 
     private void populateColorArray() {
