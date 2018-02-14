@@ -30,7 +30,7 @@ public class ImageFrame extends JFrame {
     }
 
     public void configureFPS(int fps) {
-        timer = new Timer(1000 / fps,  e -> {
+        timer = new Timer(1000 / fps, e -> {
             timer.stop();
             topLeftX += (zoom_destination_x / (image.getWidth()  - 1) - 0.5) * currWidth;
             topLeftY += (zoom_destination_y / (image.getHeight() - 1) - 0.5) * currHeight;
@@ -67,38 +67,21 @@ public class ImageFrame extends JFrame {
         double delta_Y = currHeight / (HEIGHT - 1);         // change in y per sample
         double startX = topLeftX;
 
-        double u_r, u_i, z_r, z_i;
-        u_r = !currentSet.equals("Mandelbrot") ? -0.8   : (topLeftX / (image.getWidth()  - 1)) * 4 - 2;
-        u_i = !currentSet.equals("Mandelbrot") ?  0.156 : 1.5 - (topLeftY / (image.getHeight() - 1)) * 3;
-        z_r =  currentSet.equals("Mandelbrot") ?  0     : (topLeftX / (image.getWidth()-1)) * 4 - 2;
-        z_i =  currentSet.equals("Mandelbrot") ?  0     :  1.5 - (topLeftY/(image.getHeight()-1)) * 3;
-
         for(double i = 0; i < image.getWidth(); i++) {
             double startY = topLeftY;
             for(double j = 0; j < image.getHeight(); j++) {                 // for each pixel in the image
                
-                // u_r = !currentSet.equals("Mandelbrot") ? -0.8   : u_r;
-                // u_i = !currentSet.equals("Mandelbrot") ?  0.156 : u_i;
-                // z_r =  currentSet.equals("Mandelbrot") ?  0     : (startX / (image.getWidth()-1)) * 4 - 2;
-                // z_i =  currentSet.equals("Mandelbrot") ?  0     : 1.5 - (startY / (image.getHeight()-1)) * 3;
-
-
-                if(currentSet.equals("Mandelbrot")) {
-                    u_r =        (startX / (image.getWidth()  - 1)) * 4 - 2; // sample the complex plane
-                    u_i =  1.5 - (startY / (image.getHeight() - 1)) * 3;
-                    z_r = z_i = 0;
-                 }
-                 else {
-                    z_r =  (startX / (image.getWidth()-1)) * 4 - 2;       // sample the complex plane
-                    z_i =  1.5 - (startY/(image.getHeight()-1)) * 3;
-                }
+                double u_r = !currentSet.equals("Mandelbrot") ? -0.8   : (startX / (image.getWidth()  - 1)) * 4 - 2;
+                double u_i = !currentSet.equals("Mandelbrot") ?  0.156 : 1.5 - (startY / (image.getHeight() - 1)) * 3;
+                double z_r =  currentSet.equals("Mandelbrot") ?  0     : (startX / (image.getWidth()-1)) * 4 - 2;
+                double z_i =  currentSet.equals("Mandelbrot") ?  0     :  1.5 - (startY / (image.getHeight()-1)) * 3;
 
                 int t = 0;
                 while(t++ != 100) {  // while t != tMax
-                    double temp = z_r;               // z = z^2 + u
+                    double temp = z_r;                  // z = z^2 + u
                     z_r = (z_r * z_r - z_i * z_i) + u_r;
                     z_i = (temp * z_i + temp * z_i) + u_i;
-                    if(z_r * z_r + z_i * z_i > 4)   // diverge
+                    if(z_r * z_r + z_i * z_i > 4)       // diverge
                         break; 
                 }
 
@@ -117,24 +100,21 @@ public class ImageFrame extends JFrame {
     private void populateColorArray() {
         colors =  new int[100];
 
-        // Fill first 1/5 with interpolated Colors
-        int start = (255 << 24) | (4 << 16) | (15 << 8) | 114;        // start color
+        int start = (255 << 24) | (4 << 16) | (15 << 8) | 114;          
         int end =   (255 << 24) | (132 << 16) | (248 << 8) | 255;
-        int[] colorOne = getColors(start, end,  colors.length / 5);
+        int[] colorOne = getColors(start, end,  colors.length / 5);     // Fill first 1/5 with interpolated colors
         for (int i = 0; i < colors.length / 5; i++)
             colors[i] = colorOne[i];
 
         end = (255 << 24) | (255 << 16) | (80 << 8) | 0;
         start =   (255 << 24) | (255 << 16) | (238 << 8) | 0;
-        // Fill 1/5 to 4/5
-        int[] colorTwo = getColors(start, end,  3 * colors.length / 5);
+        int[] colorTwo = getColors(start, end,  3 * colors.length / 5); // Fill 1/5 to 4/5
         for (int i = colors.length / 5; i < 4 * colors.length / 5; i++)
             colors[i] = colorTwo[i - colors.length / 5];
 
         end = (255 << 24) | (37 << 16) | (14 << 8) | 255;
         start =  (255 << 24) | (109 << 16) | (35 << 8) | 188;
-        // Fill 4/5 to the end of the colors array
-        int[] colorThree = getColors(start, end, colors.length / 5);
+        int[] colorThree = getColors(start, end, colors.length / 5);    // Fill 4/5 to the end of the colors array
         for (int i = 4 * colors.length / 5; i < colors.length ; i++)
             colors[i] = colorThree[i - 4 * colors.length / 5];
     }
@@ -237,10 +217,10 @@ public class ImageFrame extends JFrame {
             ControlPanel controlPanel = new ControlPanel(imageFrame);
             this.add(controlPanel);
 
-            int x1 = (int)(this.image.getWidth() - image.getWidth() * 0.15);
+            int x1 = (int)(image.getWidth() - image.getWidth() * 0.15);
             int x2 = (int)(image.getWidth() * 0.15);
-            int y1 = (int)(this.image.getHeight() * 0.333);
-            int y2 = (int)(this.image.getHeight() * 0.333);
+            int y1 = (int)(image.getHeight() * 0.333);
+            int y2 = (int)(image.getHeight() * 0.333);
             controlPanel.setBounds(x1, y1, x2, y2);
         }
 
