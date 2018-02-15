@@ -34,7 +34,7 @@ public class ImageFrame extends JFrame {
             timer.stop();
             topLeftX += (zoom_destination_x / (image.getWidth()  - 1) - 0.5) * currWidth;
             topLeftY += (zoom_destination_y / (image.getHeight() - 1) - 0.5) * currHeight;
-            runBoth();
+            redrawImage();
             repaint();
             timer.restart();
         });
@@ -53,7 +53,7 @@ public class ImageFrame extends JFrame {
         }
     }
 
-    public void runBoth() {
+    public void redrawImage() {
         double x0, y0, x1, y1;
         x0 = y0 = zoomIn ? scaleFactor: -scaleFactor;
         x1 = y1 = zoomIn ? 1 - scaleFactor : 1 + scaleFactor;
@@ -64,12 +64,12 @@ public class ImageFrame extends JFrame {
         currHeight = y1 * currHeight + topLeftY - topLeftY;
 
         double delta_X = currWidth / (WIDTH - 1);         // change in x per sample
-        double delta_Y = currHeight / (HEIGHT - 1);         // change in y per sample
+        double delta_Y = currHeight / (HEIGHT - 1);       // change in y per sample
         double startX = topLeftX;
 
         for(double i = 0; i < image.getWidth(); i++) {
             double startY = topLeftY;
-            for(double j = 0; j < image.getHeight(); j++) {                 // for each pixel in the image
+            for(double j = 0; j < image.getHeight(); j++) {       
                
                 double u_r = !currentSet.equals("Mandelbrot") ? -0.8   : (startX / (image.getWidth()  - 1)) * 4 - 2;
                 double u_i = !currentSet.equals("Mandelbrot") ?  0.156 : 1.5 - (startY / (image.getHeight() - 1)) * 3;
@@ -78,19 +78,17 @@ public class ImageFrame extends JFrame {
 
                 int t = 0;
                 while(t++ != 100) {  // while t != tMax
-                    double temp = z_r;                  // z = z^2 + u
+                    double temp = z_r;                      // z = z^2 + u
                     z_r = (z_r * z_r - z_i * z_i) + u_r;
                     z_i = (temp * z_i + temp * z_i) + u_i;
-                    if(z_r * z_r + z_i * z_i > 4)       // diverge
+                    if(z_r * z_r + z_i * z_i > 4)           // diverge
                         break; 
                 }
 
-                if(t < 100)            // z diverged, not in the set
-                    image.setRGB((int)i, (int)j,  colors[t]);
-                else if (t % 2 == 0)  // if even, mark for visual effects
-                    image.setRGB((int)i, (int)j, 0xFF000000);
-                else                   // z might be in the set
-                    image.setRGB((int)i, (int)j,  0xFF000000);
+                if(t < 100)            image.setRGB((int)i, (int)j,  colors[t]);  // z diverged, not in the set
+                else if (t % 2 == 0)   image.setRGB((int)i, (int)j, 0xFF000000);  // if even, mark for visual effects
+                else                   image.setRGB((int)i, (int)j, 0xFF000000);  // z might be in the set
+                
                 startY += delta_Y;
             }
             startX += delta_X;
@@ -100,19 +98,19 @@ public class ImageFrame extends JFrame {
     private void populateColorArray() {
         colors =  new int[100];
 
-        int start = (255 << 24) | (4 << 16) | (15 << 8) | 114;          
+        int start = (255 << 24) | (4 << 16)   | (15 << 8)  | 114;          
         int end =   (255 << 24) | (132 << 16) | (248 << 8) | 255;
         int[] colorOne = getColors(start, end,  colors.length / 5);     // Fill first 1/5 with interpolated colors
         for (int i = 0; i < colors.length / 5; i++)
             colors[i] = colorOne[i];
 
-        end = (255 << 24) | (255 << 16) | (80 << 8) | 0;
+        end =     (255 << 24) | (255 << 16) | (80 << 8)  | 0;
         start =   (255 << 24) | (255 << 16) | (238 << 8) | 0;
         int[] colorTwo = getColors(start, end,  3 * colors.length / 5); // Fill 1/5 to 4/5
         for (int i = colors.length / 5; i < 4 * colors.length / 5; i++)
             colors[i] = colorTwo[i - colors.length / 5];
 
-        end = (255 << 24) | (37 << 16) | (14 << 8) | 255;
+        end =    (255 << 24) | (37 << 16)  | (14 << 8) | 255;
         start =  (255 << 24) | (109 << 16) | (35 << 8) | 188;
         int[] colorThree = getColors(start, end, colors.length / 5);    // Fill 4/5 to the end of the colors array
         for (int i = 4 * colors.length / 5; i < colors.length ; i++)
@@ -171,7 +169,7 @@ public class ImageFrame extends JFrame {
         currWidth = image.getWidth();
         currHeight = image.getHeight();
         currentSet = s;
-        runBoth();
+        redrawImage();
         repaint();
     }
 
