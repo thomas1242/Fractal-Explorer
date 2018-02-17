@@ -64,8 +64,8 @@ public class ControlPanel extends JPanel {
     }
 
     private JPanel createZoomGranularitySlider() {
-        JLabel label = createLabel("1.50% zoom", new Color(0xffdddddd), 14);
-        JSlider slider = createSlider(0, 50, 15);
+        JLabel label = createLabel("2.50% zoom", new Color(0xffdddddd), 14);
+        JSlider slider = createSlider(0, 50, 20);
         NumberFormat formatter = new DecimalFormat("#0.00");
         slider.addChangeListener(e -> {
             label.setText(formatter.format(slider.getValue() / 1.0 / 1000 * 100) + "% zoom");

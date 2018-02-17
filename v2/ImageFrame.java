@@ -18,7 +18,7 @@ public class ImageFrame extends JFrame {
 
     double currWidth, currHeight, topLeftX, topLeftY;
     double zoom_destination_x, zoom_destination_y;
-    double scaleFactor = 0.005;
+    double scaleFactor = 0.02;
 
     public ImageFrame(int width, int height) {
         this.WIDTH = width;
@@ -34,7 +34,7 @@ public class ImageFrame extends JFrame {
             timer.stop();
             topLeftX += (zoom_destination_x / (image.getWidth()  - 1) - 0.5) * currWidth;
             topLeftY += (zoom_destination_y / (image.getHeight() - 1) - 0.5) * currHeight;
-            redrawImage();
+            updateImage();
             repaint();
             timer.restart();
         });
@@ -53,7 +53,7 @@ public class ImageFrame extends JFrame {
         }
     }
 
-    public void redrawImage() {
+    public void updateImage() {
         double x0, y0, x1, y1;
         x0 = y0 = zoomIn ? scaleFactor: -scaleFactor;
         x1 = y1 = zoomIn ? 1 - scaleFactor : 1 + scaleFactor;
@@ -74,7 +74,7 @@ public class ImageFrame extends JFrame {
                 double u_r = !currentSet.equals("Mandelbrot") ? -0.8   : (startX / (image.getWidth()  - 1)) * 4 - 2;
                 double u_i = !currentSet.equals("Mandelbrot") ?  0.156 : 1.5 - (startY / (image.getHeight() - 1)) * 3;
                 double z_r =  currentSet.equals("Mandelbrot") ?  0     : (startX / (image.getWidth()-1)) * 4 - 2;
-                double z_i =  currentSet.equals("Mandelbrot") ?  0     :  1.5 - (startY / (image.getHeight()-1)) * 3;
+                double z_i =  currentSet.equals("Mandelbrot") ?  0     : 1.5 - (startY / (image.getHeight()-1)) * 3;
 
                 int t = 0;
                 while(t++ != 100) {  // while t != tMax
@@ -95,24 +95,21 @@ public class ImageFrame extends JFrame {
         }
     }
 
-    private void populateColorArray() {
+    private void initColorArray() {
         colors =  new int[100];
 
-        int start = (255 << 24) | (4 << 16)   | (15 << 8)  | 114;          
-        int end =   (255 << 24) | (132 << 16) | (248 << 8) | 255;
-        int[] colorOne = getColors(start, end,  colors.length / 5);     // Fill first 1/5 with interpolated colors
+        int[] startColors = new int[]{ 255 << 24 |   4 << 16 |  15 << 8 | 114, 255 << 24 | 255 << 16 | 238 << 8 | 0, 255 << 24 | 109 << 16 | 35 << 8 | 188 };
+        int[] endColors   = new int[]{ 255 << 24 | 132 << 16 | 248 << 8 | 255, 255 << 24 | 255 << 16 |  80 << 8 | 0, 255 << 24 |  37 << 16 | 14 << 8 | 255 };
+
+        int[] colorOne = getColors(startColors[0], endColors[0],  colors.length / 5);     // Fill first 1/5 with interpolated colors
         for (int i = 0; i < colors.length / 5; i++)
             colors[i] = colorOne[i];
 
-        end =     (255 << 24) | (255 << 16) | (80 << 8)  | 0;
-        start =   (255 << 24) | (255 << 16) | (238 << 8) | 0;
-        int[] colorTwo = getColors(start, end,  3 * colors.length / 5); // Fill 1/5 to 4/5
+        int[] colorTwo = getColors(startColors[1], endColors[1],  3 * colors.length / 5); // Fill 1/5 to 4/5
         for (int i = colors.length / 5; i < 4 * colors.length / 5; i++)
             colors[i] = colorTwo[i - colors.length / 5];
 
-        end =    (255 << 24) | (37 << 16)  | (14 << 8) | 255;
-        start =  (255 << 24) | (109 << 16) | (35 << 8) | 188;
-        int[] colorThree = getColors(start, end, colors.length / 5);    // Fill 4/5 to the end of the colors array
+        int[] colorThree = getColors(startColors[2], endColors[2], colors.length / 5);    // Fill 4/5 to the end
         for (int i = 4 * colors.length / 5; i < colors.length ; i++)
             colors[i] = colorThree[i - 4 * colors.length / 5];
     }
@@ -146,7 +143,7 @@ public class ImageFrame extends JFrame {
     private void setupImage() {
         image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
         g2d = (Graphics2D) image.createGraphics();
-        populateColorArray();
+        initColorArray();
 
         FractalDisplayPanel panel = new FractalDisplayPanel(this);
         JLabel label = new JLabel("Click and hold to zoom (LMB to zoom in/RMB to zoom out)", 0);
@@ -169,12 +166,12 @@ public class ImageFrame extends JFrame {
         currWidth = image.getWidth();
         currHeight = image.getHeight();
         currentSet = s;
-        redrawImage();
+        updateImage();
         repaint();
     }
 
-    public  void setZoomFactor(double x) {
-        scaleFactor = x;
+    public  void setZoomFactor(double scaleFactor) {
+        this.scaleFactor = scaleFactor;
     }
 
     public BufferedImage getImage() {
