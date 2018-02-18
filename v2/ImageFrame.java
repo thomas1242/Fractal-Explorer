@@ -12,13 +12,13 @@ public class ImageFrame extends JFrame {
     private Graphics2D g2d;
     private int[] colors;
 
-    String currentSet = "Mandelbrot";
-    boolean zoomIn = true;
+    private String currSet = "Mandelbrot";
+    private boolean zoomIn = true;
     private Timer timer;
 
-    double currWidth, currHeight, topLeftX, topLeftY;
-    double zoom_destination_x, zoom_destination_y;
-    double scaleFactor = 0.02;
+    private double currWidth, currHeight, topLeftX, topLeftY;
+    private double zoom_destination_x, zoom_destination_y;
+    private double scaleFactor = 0.02;
 
     public ImageFrame(int width, int height) {
         this.WIDTH = width;
@@ -29,19 +29,13 @@ public class ImageFrame extends JFrame {
         configureFPS(30);
     }
 
-    public void configureFPS(int fps) {
-        timer = new Timer(1000 / fps, e -> {
-            timer.stop();
-            topLeftX += (zoom_destination_x / (image.getWidth()  - 1) - 0.5) * currWidth;
-            topLeftY += (zoom_destination_y / (image.getHeight() - 1) - 0.5) * currHeight;
-            updateImage();
-            repaint();
-            timer.restart();
-        });
+    private void drawBackground(Color color) {
+        g2d.setColor(color);
+        g2d.fillRect(0, 0, image.getWidth(), image.getHeight());
     }
 
     public void saveImage() {
-        String inputString = JOptionPane.showInputDialog("ouput file?");
+        String inputString = JOptionPane.showInputDialog("output file?");
         if(inputString == null || inputString.length() == 0)
             return;
         try {
@@ -51,6 +45,19 @@ public class ImageFrame extends JFrame {
         catch (IOException e) {
             JOptionPane.showMessageDialog(ImageFrame.this, "Error saving file", "oops!", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    public void configureFPS(int fps) {
+        timer = new Timer(1000 / fps, e -> {
+            timer.stop();
+            topLeftX += (zoom_destination_x / (image.getWidth()  - 1) - 0.5) * currWidth;
+            topLeftY += (zoom_destination_y / (image.getHeight() - 1) - 0.5) * currHeight;
+            SwingUtilities.invokeLater(() -> {
+                updateImage();
+                repaint();
+            });
+            timer.restart();
+        });
     }
 
     public void updateImage() {
@@ -71,18 +78,18 @@ public class ImageFrame extends JFrame {
             double startY = topLeftY;
             for(double j = 0; j < image.getHeight(); j++) {       
                
-                double u_r = !currentSet.equals("Mandelbrot") ? -0.8   : (startX / (image.getWidth()  - 1)) * 4 - 2;
-                double u_i = !currentSet.equals("Mandelbrot") ?  0.156 : 1.5 - (startY / (image.getHeight() - 1)) * 3;
-                double z_r =  currentSet.equals("Mandelbrot") ?  0     : (startX / (image.getWidth()-1)) * 4 - 2;
-                double z_i =  currentSet.equals("Mandelbrot") ?  0     : 1.5 - (startY / (image.getHeight()-1)) * 3;
+                double u_r = !currSet.equals("Mandelbrot") ? -0.8   : (startX / (image.getWidth()  - 1)) * 4 - 2;
+                double u_i = !currSet.equals("Mandelbrot") ?  0.156 : 1.5 - (startY / (image.getHeight() - 1)) * 3;
+                double z_r =  currSet.equals("Mandelbrot") ?  0     : (startX / (image.getWidth()-1)) * 4 - 2;
+                double z_i =  currSet.equals("Mandelbrot") ?  0     : 1.5 - (startY / (image.getHeight()-1)) * 3;
 
                 int t = 0;
-                while(t++ != 100) {  // while t != tMax
-                    double temp = z_r;                      // z = z^2 + u
+                while(t++ != 100) {                         // while t != tMax
+                    double temp = z_r;                      
                     z_r = (z_r * z_r - z_i * z_i) + u_r;
-                    z_i = (temp * z_i + temp * z_i) + u_i;
-                    if(z_r * z_r + z_i * z_i > 4)           // diverge
-                        break; 
+                    z_i = (temp * z_i + temp * z_i) + u_i;  
+                    if(z_r * z_r + z_i * z_i > 4)           // z^2 + u
+                        break;                              // diverge
                 }
 
                 if(t < 100)            image.setRGB((int)i, (int)j,  colors[t]);  // z diverged, not in the set
@@ -102,16 +109,13 @@ public class ImageFrame extends JFrame {
         int[] endColors   = new int[]{ 255 << 24 | 132 << 16 | 248 << 8 | 255, 255 << 24 | 255 << 16 |  80 << 8 | 0, 255 << 24 |  37 << 16 | 14 << 8 | 255 };
 
         int[] colorOne = getColors(startColors[0], endColors[0],  colors.length / 5);     // Fill first 1/5 with interpolated colors
-        for (int i = 0; i < colors.length / 5; i++)
-            colors[i] = colorOne[i];
+        System.arraycopy(colorOne, 0, colors, 0, colors.length / 5);
 
         int[] colorTwo = getColors(startColors[1], endColors[1],  3 * colors.length / 5); // Fill 1/5 to 4/5
-        for (int i = colors.length / 5; i < 4 * colors.length / 5; i++)
-            colors[i] = colorTwo[i - colors.length / 5];
+        System.arraycopy(colorTwo, 0, colors, colors.length / 5, 4 * colors.length / 5 - colors.length / 5);
 
         int[] colorThree = getColors(startColors[2], endColors[2], colors.length / 5);    // Fill 4/5 to the end
-        for (int i = 4 * colors.length / 5; i < colors.length ; i++)
-            colors[i] = colorThree[i - 4 * colors.length / 5];
+        System.arraycopy(colorThree, 0, colors, 4 * colors.length / 5, colors.length - 4 * colors.length / 5);
     }
 
     public static int[] getColors(int startRGB, int endRGB, int length) {
@@ -147,7 +151,6 @@ public class ImageFrame extends JFrame {
 
         FractalDisplayPanel panel = new FractalDisplayPanel(this);
         JLabel label = new JLabel("Click and hold to zoom (LMB to zoom in/RMB to zoom out)", 0);
-
         this.getContentPane().add(panel, BorderLayout.CENTER);
         this.getContentPane().add(label, BorderLayout.SOUTH);
         this.pack();
@@ -155,17 +158,12 @@ public class ImageFrame extends JFrame {
         freshImage("Mandelbrot");
     }
 
-    private void drawBackground(Color color) {
-        g2d.setColor(color);
-        g2d.fillRect(0, 0, image.getWidth(), image.getHeight());
-    }
-
     public void freshImage(String s) {         // clear image state, set white background
         drawBackground(Color.WHITE);
         topLeftX = topLeftY = 0;
         currWidth = image.getWidth();
         currHeight = image.getHeight();
-        currentSet = s;
+        currSet = s;
         updateImage();
         repaint();
     }
@@ -174,7 +172,7 @@ public class ImageFrame extends JFrame {
         this.scaleFactor = scaleFactor;
     }
 
-    public BufferedImage getImage() {
+    private BufferedImage getImage() {
         return image;
     }
 
@@ -205,7 +203,7 @@ public class ImageFrame extends JFrame {
             });
             addMouseListener(new MouseAdapter() {
                 public void mouseReleased(MouseEvent event) {
-                    timer.stop();                       // stop zooming
+                    timer.stop();
                 }
             });
 
@@ -232,13 +230,13 @@ public class ImageFrame extends JFrame {
         private void LMBisPressed(Point p) {
             updateSelection(p);
             zoomIn = true;
-            timer.start();                      // start zooming
+            timer.start();
         }
 
         private void RMBisPressed(Point p) {
             updateSelection(p);
             zoomIn = false;
-            timer.start();                      // start zooming
+            timer.start();
         }
     }
 }
