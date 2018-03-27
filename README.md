@@ -4,14 +4,13 @@
 ## Compilation and running:
 
 ```javascript
-
 git clone https://github.com/thomas1242/Fractal-Explorer     # clone the repository  
 
-javac Fractal-Explorer/v1/*.java     # compile and run version 1 (select a region and zoom)
-java -cp Fractal-Explorer/v1 Main    
-
-javac Fractal-Explorer/v2/*.java     # compile and run version 2 (zoom towards mouse cursor)
+javac Fractal-Explorer/v2/*.java     # compile and run v2 (zoom towards mouse cursor)
 java -cp Fractal-Explorer/v2 Main 
+
+javac Fractal-Explorer/v1/*.java     # compile and run v1 (select a region and zoom)
+java -cp Fractal-Explorer/v1 Main    
 ```
 
 
