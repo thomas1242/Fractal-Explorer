@@ -1,4 +1,4 @@
-# Mandelbrot and Julia set explorer 
+# Mandelbrot and Julia set explorer (A Java/Swing App)
 <!-- ## Coursework from Dave Small's Intro to Digital Arts & Sciences. -->
 
 ## Compilation and running:
