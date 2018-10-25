@@ -12,7 +12,8 @@ Compile and run the source code
 ```javascript
 javac Fractal-Explorer/v2/*.java     # v2 (zoom towards mouse cursor)
 java -cp Fractal-Explorer/v2 Main 
-
+```
+```javascript
 javac Fractal-Explorer/v1/*.java     # v1 (select a region and zoom)
 java -cp Fractal-Explorer/v1 Main    
 ```
